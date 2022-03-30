@@ -5,12 +5,17 @@ dotenv.config();
 const port = process.env.PORT;
 // connection DB
 const db = require("./config/db");
+// middleware 
+// const middlewareController = require("./controllers/middlewareController");
+// import Router
+const loginRoute = require("./routers/loginRouter");
 
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //ROUTES
+app.use("/", loginRoute);
 
 app.listen(port, () => {
   console.log("App start success");
