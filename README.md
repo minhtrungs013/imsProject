@@ -1,5 +1,5 @@
 # imsProject
-npm i body-parser cookie-parser cors dotenv express jsonwebtoken md5 multer mysql nodemailer nodemon
+npm i body-parser cookie-parser cors dotenv express jsonwebtoken md5 multer mysql nodemailer nodemon db-migrate db-migrate-mysql 
 tạo .env -> 
 DB_HOST= localhost
 DB_USER= root
