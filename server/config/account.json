@@ -1,0 +1,32 @@
+{
+    "user":  [
+    {
+        "id": "1",
+        "userName": "minhtrung",
+        "email": "minhtrung@gmail.com",
+        "password": "25d55ad283aa400af464c76d713c07ad"
+
+    },
+    { 
+        "id": "2",
+        "userName": "lehuy",
+        "email": "lehuy@gmail.com",
+        "password": "25f9e794323b453885f5181f1b624d0b"
+
+    },
+    { 
+        "id": "3",
+        "userName": "hungmai",
+        "email": "hungmai@gmail.com",
+        "password": "0f7e44a922df352c05c5f73cb40ba115"
+
+    },
+    { 
+        "id": "4",
+        "userName": "biencuong",
+        "email": "biencuong@gmail.com",
+        "password": "e807f1fcf82d132f9bb018ca6738a19f"
+
+    }
+]
+}

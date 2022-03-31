@@ -1,8 +1,9 @@
 const md5 = require("md5");
-const userModel = require("../models/userModel");
+const account = require("../config/account.json");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
+
 const loginController = {
   generateAccessToken: (username, password) => {
     return jwt.sign(
@@ -16,23 +17,22 @@ const loginController = {
   },
   login: (req, res) => {
     const { username, password } = req.body;
-    if (!username) {
-      return res.status(400).json("You need to enter username");
-    }
-    if (!password) {
-      return res.status(400).json("You need to enter password");
+    if (!username || !password) {
+      return res.status(400).json("You need to enter all the information");
     }
     {
+      const listAccounts = account.user.length;
       const passwordMd5 = md5(req.body.password);
-      userModel.get({ username, passwordMd5 }, (response) => {
-        if (response.length > 0) {
-          const accessToken = loginController.generateAccessToken(username,password);
-          return res.status(200).json({ accessToken});
+      for (var i = 0; i < listAccounts; i++) {
+        if (username == account.user[i].userName && passwordMd5 == account.user[i].password){
+          const accessToken = loginController.generateAccessToken(
+            username,
+            password
+          );
+          return res.status(200).json({ accessToken });
         }
-        {
-          return res.status(400).json("Incorrect userName or password");
-        }
-      });
+      }
+      return res.status(400).json("Incorrect userName or password");
     }
   },
 };
