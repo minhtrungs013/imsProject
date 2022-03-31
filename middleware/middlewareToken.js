@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
-const middlewareController = {
+const middlewareToken = {
   verifyToken: (req, res, next) => {
     const token = req.headers.token;
     if (token) {
@@ -18,4 +18,4 @@ const middlewareController = {
     }
   },
 };
-module.exports = middlewareController;
+module.exports = middlewareToken;
