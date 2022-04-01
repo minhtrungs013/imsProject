@@ -12,3 +12,15 @@ adminPassword = qzhuqsixihqonach
 mailHost = smtp.gmail.com
 mailPort = 465
 PORT = 5000
+update  db-migrate
+ npm i db-migrate 
+ npm i  db-migrate-mysql
+
+ câu lệnh 
+ up bảng lên:  db-migrate up
+ up csdl lên: db-migrate up:seeds
+ down bảng xuống:  db-migrate down -c 7
+ down bảng xuống:  db-migrate down:seeds
+
+
+
