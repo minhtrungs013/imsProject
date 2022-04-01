@@ -5,5 +5,5 @@ var mentorController = require("../controllers/mentorController");
 router.get("/GetListMentor", mentorController.mentor);
 router.get("/GetListMentor/batch:id", mentorController.detail);
 router.get("/GetListMentor/:id", mentorController.BatchID);
-
+router.post("/CreateMentor", mentorController.create);
 module.exports = router;

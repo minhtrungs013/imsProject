@@ -42,11 +42,20 @@ Mentor.GetBatchID = (id, result) => {
     (err, mentor) => {
       if (err) {
         result(null);
-        console.log(err);
       } else {
         result(mentor);
       }
     }
   );
+};
+
+Mentor.create = (data, result) => {
+  connect.query("INSERT INTO mentor SET ?", data, (err, mentor) => {
+    if (err) {
+      result(null);
+    } else {
+      result({ idMentor: mentor.insertId, ...data });
+    }
+  });
 };
 module.exports = Mentor;

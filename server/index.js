@@ -7,7 +7,7 @@ const db = require("./config/db");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 var mentorRouter = require("./routers/mentorRouter");
-app.use("/mentor", mentorRouter);
+app.use("/", mentorRouter);
 app.listen(port, () => {
   console.log("App start success");
 });
