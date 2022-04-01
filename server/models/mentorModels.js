@@ -10,6 +10,7 @@ const Mentor = (mentor) => {
   this.email = mentor.email;
   this.postion = mentor.postion;
   this.idDG = mentor.idDG;
+  this.idInternshipCourse = mentor.idInternshipCourse;
 };
 
 Mentor.get_all = (result) => {
@@ -24,7 +25,10 @@ Mentor.get_all = (result) => {
 
 Mentor.getByID = (id, result) => {
   connect.query(
-    "SELECT mentor.idMentor, mentor.fullNameMentor,mentor.dayOfBirth,mentor.gender,mentor.workplace,mentor.email,mentor.address,mentor.postion FROM mentor INNER JOIN internshipcourse WHERE mentor.idInternshipCourse = internshipcourse.idInternshipCourse AND internshipcourse.idInternshipCourse = ? ",
+    `SELECT mentor.idMentor, mentor.fullNameMentor,mentor.dayOfBirth,mentor.gender,mentor.workplace,mentor.email,mentor.address,mentor.postion
+     FROM mentor INNER JOIN internshipcourse
+      WHERE mentor.idInternshipCourse = internshipcourse.idInternshipCourse
+       AND internshipcourse.idInternshipCourse = ? `,
     id,
     (err, mentor) => {
       if (err) {
