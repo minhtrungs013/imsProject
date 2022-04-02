@@ -14,13 +14,17 @@ const Mentor = (mentor) => {
 };
 
 Mentor.get_all = (result) => {
-  connect.query("SELECT * FROM mentor", (err, mentor) => {
-    if (err) {
-      result(null);
-    } else {
-      result(mentor);
+  connect.query(
+    `SELECT idMentor,fullNameMentor,dayOfBirth,gender,address,workplace,email,postion,idDG,idInternshipCourse
+   FROM mentor`,
+    (err, mentor) => {
+      if (err) {
+        result(null);
+      } else {
+        result(mentor);
+      }
     }
-  });
+  );
 };
 
 Mentor.getByID = (id, result) => {
@@ -41,7 +45,9 @@ Mentor.getByID = (id, result) => {
 };
 Mentor.GetBatchID = (id, result) => {
   connect.query(
-    "SELECT * FROM mentor WHERE idMentor  = ?",
+    `SELECT idMentor,fullNameMentor, dayOfBirth,gender,address,workplace,email, postion,idDG,idInternshipCourse 
+    FROM mentor 
+    WHERE idMentor = ?`,
     id,
     (err, mentor) => {
       if (err) {

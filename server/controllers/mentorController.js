@@ -1,26 +1,29 @@
 const mentorModel = require("../models/mentorModels");
+const mentorController = {
+  mentor: (req, res) => {
+    mentorModel.get_all((data) => {
+      res.send(data);
+    });
+  },
 
-exports.mentor = (req, res) => {
-  mentorModel.get_all((data) => {
-    res.send(data);
-  });
+  detail: (req, res) => {
+    mentorModel.getByID(req.params.id, (response) => {
+      res.send(response);
+    });
+  },
+
+  BatchID: (req, res) => {
+    mentorModel.GetBatchID(req.params.id, (response) => {
+      res.send(response);
+    });
+  },
+
+  create: (req, res) => {
+    const data = req.body;
+    mentorModel.create(data, (response) => {
+      res.send(response);
+    });
+  },
 };
 
-exports.detail = (req, res) => {
-  mentorModel.getByID(req.params.id, (response) => {
-    res.send(response);
-  });
-};
-
-exports.BatchID = (req, res) => {
-  mentorModel.GetBatchID(req.params.id, (response) => {
-    res.send(response);
-  });
-};
-
-exports.create = (req, res) => {
-  const data = req.body;
-  mentorModel.create(data, (response) => {
-    res.send(response);
-  });
-};
+module.exports = mentorController;
