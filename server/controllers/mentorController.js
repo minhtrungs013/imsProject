@@ -1,6 +1,6 @@
 const mentorModel = require("../models/mentorModels");
 const mentorController = {
-  mentor: (req, res) => {
+  get: (req, res) => {
     mentorModel.get_all((data) => {
       res.send(data);
     });
