@@ -8,12 +8,12 @@ const requireToken = (req, res, next) => {
     const accessToken = token.split(" ")[1];
     const user = verify(accessToken);
     if (!user) {
-      return res.status(403).json("Token expire");
+      return res.status(403).json({error: "Token expire"});
     }
     req.user = user;
     next();
   } else {
-    res.status(401).json("Require token");
+    res.status(401).json({error:"Require token"});
   }
 };
 

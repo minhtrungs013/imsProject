@@ -21,7 +21,7 @@ const login = (req, res) => {
       return res.status(200).json({ accessToken });
     }
   }
-  return res.status(400).json({ error: "Incorrect userName or password"});
+  return res.status(400).json({ error: "Incorrect userName or password" });
 };
 
 const profile = (req, res) => {
