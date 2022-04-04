@@ -14,7 +14,9 @@ app.use(express.json());
 
 //ROUTES
 app.use("/", authRoute);
-
+//candidate
+var candidateRouter = require("./routers/candidate");
+app.use("/candidate",candidateRouter);
 app.listen(port, () => {
   console.log("App start success");
 });
