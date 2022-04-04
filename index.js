@@ -7,13 +7,13 @@ const port = process.env.PORT;
 const cors = require("cors");
 app.use(cors());
 // import Router
-const loginRoute = require("./routers/loginRouter");
+const authRoute = require("./routers/auth");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //ROUTES
-app.use("/", loginRoute);
+app.use("/", authRoute);
 
 app.listen(port, () => {
   console.log("App start success");
