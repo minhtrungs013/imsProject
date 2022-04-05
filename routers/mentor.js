@@ -1,6 +1,6 @@
-var express = require("express");
-var router = express.Router();
-var mentorController = require("../controllers/mentorController");
+const express = require("express");
+const router = express.Router();
+const mentorController = require("../controllers/mentorController");
 
 router.get("/GetListMentor", mentorController.get);
 router.get("/GetListMentor/batch:id", mentorController.detail);
