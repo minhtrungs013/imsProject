@@ -1,17 +1,22 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
+const { requireToken } = require("./middleware/index");
+const cors = require("cors");
+const authRoute = require("./routers/auth");
+const mentor = require("./routers/mentor");
+
 dotenv.config();
 const port = process.env.PORT;
-const cors = require("cors");
+
 app.use(cors());
-const { requireToken } = require("./middleware/index");
-const authRoute = require("./routers/auth");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use("/", authRoute);
-const mentor = require("./routers/mentor");
-app.use("/mentor", requireToken, mentor);
+
+// register route
+app.use(authRoute);
+app.use(requireToken, mentor);
+
 app.listen(port, () => {
   console.log("App start success");
 });
