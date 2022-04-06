@@ -78,7 +78,7 @@ Internshipcourse.createCourse = (data, result) => {
           return result(err);
         }
         if (internshipcourse.affectedRows === 0) {
-          return result({ error: "không có giá trị" });
+          return result({ error: "Not Found" });
         }
         return result(internshipcourse);
       }
