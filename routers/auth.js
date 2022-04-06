@@ -30,11 +30,22 @@ const { requireToken } = require("../middleware/index");
  *             schema:
  *               type: object
  *               properties:
- *                 token:
+ *                 accessToken:
  *                       type: string
  *                       description: user's token.
  *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6Im1pbmh0cnVuZzEiLCJwYXNzd29yZCI6IjEyMzQ1IiwiaWF0IjoxNjQ5MjEyMjgwLCJleHAiOjE2NDk4MTcwODB9.sW4ZRIU_DuOnd7NVhFlRsdTu7Q7rieIwYlx9jsQx1ms
+ *       400:
+ *         description: Incorrect userName or password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                      type: string
+ *                      example: Incorrect userName or password.
  */
+
 router.post("/auth/login", login);
 router.get("/auth/profile", requireToken, profile);
 
