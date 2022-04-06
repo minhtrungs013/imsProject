@@ -4,7 +4,7 @@ const { requireToken } = require("../middleware/index");
 
 /**
  * @swagger
- * /api/auth:
+ * /auth/login:
  *   post:
  *     summary: Login.
  *     requestBody:

@@ -5,7 +5,6 @@ const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 dotenv.config();
 const port = process.env.PORT;
-// fix bug error CORS
 const cors = require("cors");
 app.use(cors());
 const swaggerDefinition = {
@@ -26,27 +25,21 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:5000",
+      url: `http://localhost:${port}`,
       description: "Development server",
     },
   ],
 };
-
 const options = {
   swaggerDefinition,
   apis: ["./routers/*.js"],
 };
-// import Router
 const specs = swaggerJsDoc(options);
 const authRoute = require("./routers/auth");
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-//ROUTES
 app.use(authRoute);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
-
 app.listen(port, () => {
   console.log("App start success");
 });
