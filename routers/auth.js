@@ -23,7 +23,7 @@ const { requireToken } = require("../middleware/index");
  *                 description: user's password.
  *                 example: 12345
  *     responses:
- *       201:
+ *       200:
  *         description: Token.
  *         content:
  *           application/json:
