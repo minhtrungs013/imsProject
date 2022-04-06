@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/", authRoute);
 const mentor = require("./routers/mentor");
-app.use("/mentor", requireToken, mentor);
+app.use("/mentor", mentor);
 app.listen(port, () => {
   console.log("App start success");
 });

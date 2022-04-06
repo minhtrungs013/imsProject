@@ -1,12 +1,13 @@
-const express = require("express");
-const router = express.Router();
-const mentorController = require("../controllers/mentorController");
+var express = require("express");
+var router = express.Router();
+var mentorController = require("../controllers/mentorController");
 
-router.get("/GetListMentor", mentorController.get);
-router.get("/GetListMentor/batch:id", mentorController.detail);
-router.get("/GetListMentor/:id", mentorController.BatchID);
-router.delete("/DeleteMentor/:id", mentorController.remove);
-router.post("/CreateMentor", mentorController.create);
-router.put("/UpdateMentor", mentorController.update);
+router.get("/", mentorController.get);
+router.get("/page:id", mentorController.getPage);
+router.get("/batch:id", mentorController.detailBatch);
+router.get("/:id", mentorController.detail);
+router.delete("/delete/:id", mentorController.remove);
+router.post("/create", mentorController.create);
+router.put("/update", mentorController.update);
 
 module.exports = router;
