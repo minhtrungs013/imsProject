@@ -1,4 +1,5 @@
 const connect = require("../config/db");
+const util = require("util");
 
 const Internshipcourse = (internshipcourse) => {
   this.idInternshipCourse = internshipcourse.idInternshipCourse;
@@ -9,80 +10,74 @@ const Internshipcourse = (internshipcourse) => {
   this.kindOfInternship = internshipcourse.kindOfInternship;
 };
 
-Internshipcourse.getListCoure = (result) => {
-  connect.query(
-    "SELECT idInternshipCourse, nameCoure FROM internshipcourse",
-    (err, internshipcourse) => {
-      if (err) {
-        result(null);
-      } else {
-        result(internshipcourse);
-      }
-    }
-  );
+Internshipcourse.getList = async (condition) => {
+  try {
+    const listColumn = "*";
+    const strSql = `SELECT ${listColumn} FROM internshipcourse `;
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(strSql);
+    return condition(result);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-Internshipcourse.getIdCoure = (id, result) => {
-  connect.query(
-    "SELECT nameCoure FROM internshipcourse WHERE idInternshipCourse = ?",
-    id,
-    (err, internshipcourse) => {
-      if (err) {
-        result(null);
-      } else {
-        result(internshipcourse);
-      }
-    }
-  );
+Internshipcourse.getId = async (condition) => {
+  try {
+    const where = buildWhere(condition);
+    const listColumn = "*";
+    const strSql = `SELECT ${listColumn} FROM internshipcourse WHERE ${where}`;
+    const query = util.promisify(connect.query).bind(connect);
+    return await query(strSql);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-Internshipcourse.createCourse = (data, result) => {
-  connect.query(
-    "INSERT INTO internshipcourse SET ?",
-    data,
-    (err, internshipcourse) => {
-      if (err) {
-        result(null);
-      } else {
-        result({ idInternshipCourse: internshipcourse.insertId, ...data });
-      }
-    }
-  );
+Internshipcourse.create = async (condition, result) => {
+  try {
+    const strSql = `INSERT INTO internshipcourse SET ?`;
+    const query = util.promisify(connect.query).bind(connect);
+    await query(strSql, condition).then((res) => {
+      return result({ idInternshipCourse: res.insertId, ...condition });
+    });
+  } catch (err) {
+    result(err);
+  }
 };
-(Internshipcourse.update = (id, result) => {
-  connect.query(
-    "UPDATE internshipcourse SET nameCoure = ?,dateStart =?,dateEnd=?,status=?,kindOfInternship=? WHERE idInternshipCourse=?",
-    [
-      id.nameCoure,
-      id.dateStart,
-      id.dateEnd,
-      id.status,
-      id.kindOfInternship,
-      id.idInternshipCourse,
-    ],
-    (err, internshipcourse) => {
-      if (err) {
-        result(null);
-      } else {
-        result(id);
-      }
-    }
-  );
-}),
-  (Internshipcourse.deleteCourse = (id, result) => {
-    connect.query(
-      "DELETE FROM internshipcourse WHERE idInternshipCourse = ?",
-      id,
-      (err, internshipcourse) => {
-        if (err) {
-          return result(err);
-        }
-        if (internshipcourse.affectedRows === 0) {
-          return result({ error: "Not Found" });
-        }
-        return result(internshipcourse);
-      }
-    );
-  });
+Internshipcourse.update = async (condition) => {
+  try {
+    const where = buildWhere(condition);
+    const sql = `UPDATE internshipcourse SET ? WHERE ${where}`;
+    const query = util.promisify(connect.query).bind(connect);
+    const result= await query(sql, condition)
+    return result.affectedRows !== 0;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+Internshipcourse.delete = async (condition) => {
+  try {
+    const where = buildWhere(condition);
+    console.log(where);
+    const sql = `DELETE FROM internshipcourse WHERE ${where}`;
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(sql);
+    return result.affectedRows !== 0;
+  } catch (err) {
+    console.log(err.message);
+    throw err;
+  }
+};
+
+const buildWhere = (condition) => {
+  let strWhere = "1=1";
+  if (condition.idInternshipCourse) {
+    strWhere += " AND idInternshipCourse = " + condition.idInternshipCourse;
+  }
+  return strWhere;
+};
 
 module.exports = Internshipcourse;

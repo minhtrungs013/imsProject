@@ -5,7 +5,7 @@ const {getList, details, create, del, update} = require("../controllers/courseCo
 router.get("/", getList);
 router.get("/batch:id", details);
 router.post("/create", create);
-router.put("/update", update);
-router.delete("/delete:id", del);
+router.put("/:id", update);
+router.delete("/:id", del);
 
 module.exports = router;

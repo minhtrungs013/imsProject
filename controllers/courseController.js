@@ -3,24 +3,18 @@ const statusCodes = require("http-status-codes");
 const dotenv = require("dotenv");
 dotenv.config();
 const getList = (req, res) => {
-  courseModel.getListCoure((response) => {
-    res.status(statusCodes.OK).json(response);
+  courseModel.getList((response) => {
+    return res.status(statusCodes.OK).json(response);
   });
 };
 
-const details = (req, res) => {
+const details = async (req, res) => {
   const id = req.params.id;
-  if (id === " ") {
-    return res
-      .status(statusCodes.NOT_FOUND)
-      .json({ error: "Not Found" });
-  }
-  courseModel.getIdCoure(id, (response) => {
-    res.status(statusCodes.OK).json(response);
-  });
+  const results = await courseModel.getId({ idInternshipCourse: id });
+  return res.status(statusCodes.OK).json(results);
 };
 
-const create = (req, res) => {
+const create = async (req, res) => {
   const { nameCoure, dateStart, dateEnd, status, kindOfInternship } = req.body;
   if (!nameCoure || !dateStart || !dateEnd || !status || !kindOfInternship) {
     return res
@@ -53,20 +47,28 @@ const create = (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: "You need to enter the correct information" });
   }
-  courseModel.createCourse(
+  await courseModel.create(
     { nameCoure, dateStart, dateEnd, status, kindOfInternship },
-    (response) => {
-      res.status(statusCodes.OK).json(response);
+    (result) => {
+      return res
+        .status(statusCodes.OK)
+        .json({ message: result ? "Success" : "Create fail" });
     }
   );
 };
 
-const update = (req, res) => {
-  const { idInternshipCourse, nameCoure, dateStart, dateEnd, status, kindOfInternship} = req.body;
+const update = async (req, res) => {
+  const idInternshipCourse = req.params.id;
+  const { nameCoure, dateStart, dateEnd, status, kindOfInternship } = req.body;
   if (!nameCoure || !dateStart || !dateEnd || !status || !kindOfInternship) {
     return res
       .status(statusCodes.BAD_REQUEST)
       .json({ error: "You need to enter all the information" });
+  }
+  if (idInternshipCourse === " ") {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: "You need to enter the correct information" });
   }
   if (nameCoure.length > 255 || nameCoure.length < 6) {
     return res
@@ -94,23 +96,28 @@ const update = (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: "You need to enter the correct information" });
   }
-  courseModel.update(
-    { idInternshipCourse, nameCoure, dateStart, dateEnd, status, kindOfInternship},
-    (response) => {
-      res.status(statusCodes.OK).json({ message: "update successfully" });
-    }
-  );
+  const result = await courseModel.update({
+    idInternshipCourse,
+    nameCoure,
+    dateStart,
+    dateEnd,
+    status,
+    kindOfInternship,
+  });
+  return res.status(statusCodes.OK).json({
+    message: result ? "Success" : "Update not axists",
+  });
 };
 
-const del = (req, res) => {
+const del = async (req, res) => {
   const id = req.params.id;
   if (id === " ") {
-    return res
-      .status(statusCodes.NOT_FOUND)
-      .json({ error: "Not Found" });
+    return res.status(statusCodes.NOT_FOUND).json({ error: "Not Found" });
   }
-  courseModel.deleteCourse(id, (response) => {
-    res.status(statusCodes.OK).json(response);
+  const result = await courseModel.delete({ idInternshipCourse: id });
+  return res.status(statusCodes.OK).json({
+    status: result,
+    message: result ? "Success" : "InternshipCourse not exists",
   });
 };
 
