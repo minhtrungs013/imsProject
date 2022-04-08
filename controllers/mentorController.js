@@ -78,7 +78,7 @@ const create = async (req, res) => {
   }
   if (fullNameMentor.length < 5 || fullNameMentor.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Your name has exceeded the allowed limit !!!",
+      message: `The maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
   await mentorModel.create(
@@ -131,11 +131,9 @@ const update = async (req, res) => {
       .json({ message: "Please enter information" });
   }
   if (fullNameMentor.length < 5 || fullNameMentor.length > 255) {
-    return res
-      .status(statusCodes.BAD_REQUEST)
-      .json({
-        message: `The maximum length is 255, the minimum length is 5 characters !!!`,
-      });
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: `The maximum length is 255, the minimum length is 5 characters !!!`,
+    });
   }
   const result = await mentorModel.update({
     fullNameMentor: fullNameMentor,
