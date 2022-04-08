@@ -133,7 +133,9 @@ const update = async (req, res) => {
   if (fullNameMentor.length < 5 || fullNameMentor.length > 255) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ message: "Your name has exceeded the allowed limit !!!" });
+      .json({
+        message: `The maximum length is 255, the minimum length is 5 characters !!!`,
+      });
   }
   const result = await mentorModel.update({
     fullNameMentor: fullNameMentor,
