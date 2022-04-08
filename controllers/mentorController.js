@@ -66,7 +66,6 @@ const create = async (req, res) => {
   const {
     fullNameMentor,
     dayOfBirth,
-    gender,
     address,
     workplace,
     email,
@@ -114,11 +113,7 @@ const create = async (req, res) => {
       message: "Invalid date of birth must be greater than 01/01/1960 !!!",
     });
   }
-  if (gender !== 0 && gender !== 1 && gender !== 2) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid gender get only 0,1 and 2 !!!",
-    });
-  }
+
   if (!emailRegex.test(email)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: "Invalid email !!!",
@@ -129,7 +124,6 @@ const create = async (req, res) => {
     fullNameMentor: fullNameMentor,
     dayOfBirth: dayOfBirth,
     address: address,
-    gender: gender,
     workplace: workplace,
     email: email,
     position: position,
@@ -152,7 +146,6 @@ const update = async (req, res) => {
   const {
     fullNameMentor,
     dayOfBirth,
-    gender,
     address,
     workplace,
     email,
@@ -164,7 +157,6 @@ const update = async (req, res) => {
     !fullNameMentor ||
     !dayOfBirth ||
     !address ||
-    !gender ||
     !workplace ||
     !email ||
     !position ||
@@ -201,11 +193,7 @@ const update = async (req, res) => {
       message: "Invalid date of birth must be greater than 01/01/1960 !!!",
     });
   }
-  if (gender !== 0 && gender !== 1 && gender !== 2) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid gender get only 0,1 and 2 !!!",
-    });
-  }
+
   if (!emailRegex.test(email)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: "Invalid email !!!",
@@ -216,7 +204,6 @@ const update = async (req, res) => {
     fullNameMentor: fullNameMentor,
     dayOfBirth: dayOfBirth,
     address: address,
-    gender: gender,
     workplace: workplace,
     email: email,
     position: position,
