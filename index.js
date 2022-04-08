@@ -17,7 +17,7 @@ app.use(express.json());
 
 //ROUTES
 app.use("/", authRoute);
-app.use("/internshipcourse",requireToken, courseRoute);
+app.use("/",requireToken, courseRoute);
 
 app.listen(port, () => {
   console.log("App start success");

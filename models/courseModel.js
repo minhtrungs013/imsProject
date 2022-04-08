@@ -31,16 +31,17 @@ Internshipcourse.getId = async (condition) => {
     return await query(strSql);
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
-Internshipcourse.create = async (condition, result) => {
+Internshipcourse.create = async (condition,result) => {
   try {
     const strSql = `INSERT INTO internshipcourse SET ?`;
     const query = util.promisify(connect.query).bind(connect);
-    await query(strSql, condition).then((res) => {
+    await query(strSql, condition,(err, res) => {
       return result({ idInternshipCourse: res.insertId, ...condition });
-    });
+   })
   } catch (err) {
     result(err);
   }
@@ -50,7 +51,7 @@ Internshipcourse.update = async (condition) => {
     const where = buildWhere(condition);
     const sql = `UPDATE internshipcourse SET ? WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
-    const result= await query(sql, condition)
+    const result = await query(sql, condition);
     return result.affectedRows !== 0;
   } catch (err) {
     console.log(err);
@@ -79,5 +80,10 @@ const buildWhere = (condition) => {
   }
   return strWhere;
 };
+
+Internshipcourse.STATUS_DONE = 'Done'
+Internshipcourse.STATUS_IN_PROGRESS = 'In progress'
+Internshipcourse.KOD_FULL_TIME = 'Full time'
+Internshipcourse.KOD_PARTIAL_TIME = 'Part time'
 
 module.exports = Internshipcourse;
