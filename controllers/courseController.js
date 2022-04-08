@@ -98,6 +98,7 @@ const update = async (req, res) => {
     kindOfInternship,
   });
   return res.status(statusCodes.OK).json({
+    status: result,
     message: result ? "Success" : "Update not axists",
   });
 };
