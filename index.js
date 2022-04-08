@@ -15,7 +15,7 @@ app.use(express.json());
 
 // register route
 app.use(authRoute);
-app.use(mentor);
+app.use(requireToken, mentor);
 
 app.listen(port, () => {
   console.log("App start success");

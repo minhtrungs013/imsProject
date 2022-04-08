@@ -1,5 +1,6 @@
 const mentorModel = require("../models/mentor");
 const statusCodes = require("http-status-codes");
+const { getMaxListeners } = require("../config/db");
 
 const get = async (req, res) => {
   let page = 1,
@@ -50,6 +51,9 @@ const detailBatch = async (req, res) => {
 };
 
 const create = async (req, res) => {
+  const emailRegex =
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+
   const {
     fullNameMentor,
     dayOfBirth,
@@ -65,7 +69,6 @@ const create = async (req, res) => {
     !fullNameMentor ||
     !dayOfBirth ||
     !address ||
-    !gender ||
     !workplace ||
     !email ||
     !postion ||
@@ -81,28 +84,59 @@ const create = async (req, res) => {
       message: `The maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
-  await mentorModel.create(
-    {
-      fullNameMentor: fullNameMentor,
-      dayOfBirth: dayOfBirth,
-      address: address,
-      gender: gender,
-      workplace: workplace,
-      email: email,
-      postion: postion,
-      idDG: idDG,
-      idInternshipCourse: idInternshipCourse,
-    },
-    (result) => {
-      return res.status(statusCodes.OK).json({
-        status: result,
-        message: result ? "Create successfully" : "Create failed!!!",
-      });
-    }
-  );
+  if (workplace.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid workplace length !!!",
+    });
+  }
+
+  if (address.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid address length !!!",
+    });
+  }
+  if (postion.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid postion length !!!",
+    });
+  }
+  if (dayOfBirth < "1960/01/01") {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid date of birth must be greater than 01/01/1960 !!!",
+    });
+  }
+  if (gender !== 0 && gender !== 1 && gender !== 2) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid gender get only 0,1 and 2 !!!",
+    });
+  }
+  if (!emailRegex.test(email)) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid email !!!",
+    });
+  }
+
+  const results = await mentorModel.create({
+    fullNameMentor: fullNameMentor,
+    dayOfBirth: dayOfBirth,
+    address: address,
+    gender: gender,
+    workplace: workplace,
+    email: email,
+    postion: postion,
+    idDG: idDG,
+    idInternshipCourse: idInternshipCourse,
+  });
+  return res.status(statusCodes.OK).json({
+    status: results,
+    message: results ? "Create successfully" : "Create failed!!!",
+  });
 };
 
 const update = async (req, res) => {
+  const emailRegex =
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+
   const id = req.params.id;
   const {
     fullNameMentor,
@@ -135,6 +169,38 @@ const update = async (req, res) => {
       message: `The maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
+  if (workplace.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid workplace length !!!",
+    });
+  }
+
+  if (address.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid address length !!!",
+    });
+  }
+  if (postion.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid postion length !!!",
+    });
+  }
+  if (dayOfBirth < "1960/01/01") {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid date of birth must be greater than 01/01/1960 !!!",
+    });
+  }
+  if (gender !== 0 && gender !== 1 && gender !== 2) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid gender get only 0,1 and 2 !!!",
+    });
+  }
+  if (!emailRegex.test(email)) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: "Invalid email !!!",
+    });
+  }
+
   const result = await mentorModel.update({
     fullNameMentor: fullNameMentor,
     dayOfBirth: dayOfBirth,

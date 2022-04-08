@@ -54,6 +54,15 @@ const buildWhere = (condition) => {
   if (condition.mentorId) {
     strWhere += " AND idMentor = " + condition.mentorId;
   }
+  if (condition.idMentor) {
+    strWhere += " AND idMentor = " + condition.idMentor;
+  }
+
+  if (condition.internshipcourseId) {
+    strWhere +=
+      " AND internshipcourse.idInternshipCourse  = " +
+      condition.internshipcourseId;
+  }
 
   return strWhere;
 };
@@ -67,7 +76,7 @@ Mentor.getdetailBatch = async (condition, columns, page, limit) => {
     if (page > 1) {
       offset = (page - 1) * limit;
     }
-    const where1 = buildWhereDetail(condition);
+    const where = buildWhere(condition);
     let listColumn = `mentor.idMentor,
       mentor.fullNameMentor,
       mentor.dayOfBirth,
@@ -79,22 +88,14 @@ Mentor.getdetailBatch = async (condition, columns, page, limit) => {
       dg.nameDG,
       internshipCourse.nameCoure `;
     const strSql = `SELECT ${listColumn} FROM mentor INNER JOIN internshipcourse INNER JOIN dg 
-    WHERE mentor.idInternshipCourse = internshipcourse.idInternshipCourse AND mentor.idDG = dg.idDG AND ${where1}  LIMIT ${limit} OFFSET ${offset} `;
+    WHERE mentor.idInternshipCourse = internshipcourse.idInternshipCourse AND mentor.idDG = dg.idDG AND ${where}  LIMIT ${limit} OFFSET ${offset} `;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
     console.log(err);
   }
 };
-const buildWhereDetail = (condition) => {
-  let strWhere = "1=1";
-  if (condition.internshipcourseId) {
-    strWhere +=
-      " AND internshipcourse.idInternshipCourse  = " +
-      condition.internshipcourseId;
-  }
-  return strWhere;
-};
+
 Mentor.remove = async (condition) => {
   try {
     const where = buildWhere(condition);
@@ -108,13 +109,12 @@ Mentor.remove = async (condition) => {
   }
 };
 
-Mentor.create = async (condition, result) => {
+Mentor.create = async (condition) => {
   try {
     const sql = `INSERT INTO mentor SET ?`;
     const query = util.promisify(connect.query).bind(connect);
-    await query(sql, condition).then((res) => {
-      return result({ idInternshipCourse: res.insertId, ...condition });
-    });
+    const result = await query(sql, condition);
+    return result.affectedRows !== 0;
   } catch (err) {
     console.log(err);
   }
@@ -122,7 +122,7 @@ Mentor.create = async (condition, result) => {
 
 Mentor.update = async (condition) => {
   try {
-    const where = buildWhereUpdate(condition);
+    const where = buildWhere(condition);
     const sql = `UPDATE mentor SET ? WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
@@ -132,12 +132,4 @@ Mentor.update = async (condition) => {
   }
 };
 
-const buildWhereUpdate = (condition) => {
-  let strWhere = "1=1";
-  if (condition.idMentor) {
-    strWhere += " AND idMentor = " + condition.idMentor;
-  }
-
-  return strWhere;
-};
 module.exports = Mentor;
