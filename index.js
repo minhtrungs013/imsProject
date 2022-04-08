@@ -16,8 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //ROUTES
-app.use("/", authRoute);
-app.use("/",requireToken, courseRoute);
+app.use(authRoute);
+app.use(requireToken, courseRoute);
 
 app.listen(port, () => {
   console.log("App start success");
