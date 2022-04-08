@@ -5,7 +5,6 @@ const Mentor = (mentor) => {
   this.idMentor = mentor.idMentor;
   this.fullNameMentor = mentor.fullName;
   this.dayOfBirth = mentor.dayOfBirth;
-  this.gender = mentor.gender;
   this.address = mentor.address;
   this.workplace = mentor.workplace;
   this.email = mentor.email;
@@ -79,7 +78,6 @@ Mentor.getdetailBatch = async (condition, columns, page, limit) => {
     let listColumn = `mentor.idMentor,
       mentor.fullNameMentor,
       mentor.dayOfBirth,
-      mentor.gender,
       mentor.workplace,
       mentor.email,
       mentor.address,
