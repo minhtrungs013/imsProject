@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
-const { requireToken } = require("./middleware/index");
 const cors = require("cors");
 app.use(cors());
 const {requireToken} = require("./middleware/index")
