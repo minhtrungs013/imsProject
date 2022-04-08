@@ -99,7 +99,7 @@ const update = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     status: result,
-    message: result ? "Success" : "Update not axists",
+    message: result ? "Success" : "Update not exists",
   });
 };
 
