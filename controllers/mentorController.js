@@ -223,6 +223,7 @@ const update = async (req, res) => {
     idMentor: id,
   });
   return res.status(statusCodes.OK).json({
+    data: result,
     message: result ? "Update successfully" : "Update faile !!!",
   });
 };
