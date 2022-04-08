@@ -60,8 +60,7 @@ const buildWhere = (condition) => {
 
   if (condition.internshipcourseId) {
     strWhere +=
-      " AND internshipcourse.idInternshipCourse  = " +
-      condition.internshipcourseId;
+      " AND mentor.idInternshipCourse  = " + condition.internshipcourseId;
   }
 
   return strWhere;

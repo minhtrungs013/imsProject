@@ -21,7 +21,7 @@ const get = async (req, res) => {
 const detail = async (req, res) => {
   const id = req.params.id;
   const results = await mentorModel.get({ mentorId: id }, [], 1, 1);
-  return res.send(results[0]);
+  return res.send({ data: results[0] });
 };
 
 const remove = async (req, res) => {
@@ -47,7 +47,16 @@ const detailBatch = async (req, res) => {
     page,
     limit
   );
-  return res.send(results);
+  const total = await mentorModel.getTotalCount(
+    { internshipcourseId: id },
+    [],
+    page,
+    limit
+  );
+  return res.send({
+    data: results,
+    total: total,
+  });
 };
 
 const create = async (req, res) => {
