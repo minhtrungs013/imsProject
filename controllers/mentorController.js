@@ -124,7 +124,6 @@ const create = async (req, res) => {
     fullNameMentor: fullNameMentor,
     dayOfBirth: dayOfBirth,
     address: address,
-
     workplace: workplace,
     email: email,
     position: position,
@@ -147,7 +146,6 @@ const update = async (req, res) => {
   const {
     fullNameMentor,
     dayOfBirth,
-
     address,
     workplace,
     email,
