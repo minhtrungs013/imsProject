@@ -138,7 +138,9 @@ const create = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     status: results,
-    message: results ? "Create successfully" : "Create failed!!!",
+    message: results
+      ? "Create successfully"
+      : "DG or InternshipCourse not exits!!!",
   });
 };
 
@@ -224,7 +226,7 @@ const update = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     data: result,
-    message: result ? "Update successfully" : "Update faile !!!",
+    message: result ? "Update successfully" : "Mentor not exits !!!",
   });
 };
 
