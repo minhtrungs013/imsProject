@@ -70,7 +70,7 @@ const create = async (req, res) => {
     address,
     workplace,
     email,
-    postion,
+    position,
     idDG,
     idInternshipCourse,
   } = req.body;
@@ -80,7 +80,7 @@ const create = async (req, res) => {
     !address ||
     !workplace ||
     !email ||
-    !postion ||
+    !position ||
     !idDG ||
     !idInternshipCourse
   ) {
@@ -104,9 +104,9 @@ const create = async (req, res) => {
       message: "Invalid address length !!!",
     });
   }
-  if (postion.length > 255) {
+  if (position.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid postion length !!!",
+      message: "Invalid position length !!!",
     });
   }
   if (dayOfBirth < "1960/01/01") {
@@ -132,7 +132,7 @@ const create = async (req, res) => {
     gender: gender,
     workplace: workplace,
     email: email,
-    postion: postion,
+    position: position,
     idDG: idDG,
     idInternshipCourse: idInternshipCourse,
   });
@@ -156,7 +156,7 @@ const update = async (req, res) => {
     address,
     workplace,
     email,
-    postion,
+    position,
     idDG,
     idInternshipCourse,
   } = req.body;
@@ -167,7 +167,7 @@ const update = async (req, res) => {
     !gender ||
     !workplace ||
     !email ||
-    !postion ||
+    !position ||
     !idDG ||
     !idInternshipCourse
   ) {
@@ -191,9 +191,9 @@ const update = async (req, res) => {
       message: "Invalid address length !!!",
     });
   }
-  if (postion.length > 255) {
+  if (position.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid postion length !!!",
+      message: "Invalid position length !!!",
     });
   }
   if (dayOfBirth < "1960/01/01") {
@@ -219,7 +219,7 @@ const update = async (req, res) => {
     gender: gender,
     workplace: workplace,
     email: email,
-    postion: postion,
+    position: position,
     idDG: idDG,
     idInternshipCourse: idInternshipCourse,
     idMentor: id,

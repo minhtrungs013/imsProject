@@ -9,7 +9,7 @@ const Mentor = (mentor) => {
   this.address = mentor.address;
   this.workplace = mentor.workplace;
   this.email = mentor.email;
-  this.postion = mentor.postion;
+  this.position = mentor.position;
   this.idDG = mentor.idDG;
   this.idInternshipCourse = mentor.idInternshipCourse;
 };
@@ -83,7 +83,7 @@ Mentor.getdetailBatch = async (condition, columns, page, limit) => {
       mentor.workplace,
       mentor.email,
       mentor.address,
-      mentor.postion,
+      mentor.position,
       dg.nameDG,
       internshipCourse.nameCoure `;
     const strSql = `SELECT ${listColumn} FROM mentor INNER JOIN internshipcourse INNER JOIN dg 
