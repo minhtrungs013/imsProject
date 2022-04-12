@@ -190,27 +190,27 @@ const update = async (req, res) => {
       message: `You need to enter the correct information Mentor`,
     });
   }
-  if (technicalComments.length < 3 || technicalComments.length > 255) {
+  if (technicalComments.length < 5 || technicalComments.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The technicalComments is maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
-  if (technicalScore.length < 3 || technicalScore.length > 255) {
+  if (technicalScore.length < 5 || technicalScore.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The Technical Score maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
-  if (attitude.length < 3 || attitude.length > 255) {
+  if (attitude.length < 5 || attitude.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The attitude is maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
-  if (englishCommunication.length < 3 || englishCommunication.length > 255) {
+  if (englishCommunication.length < 5 || englishCommunication.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The English Commuication is maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
-  if (comments.length < 3 || comments.length > 255) {
+  if (comments.length < 5 || comments.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The comments is maximum length is 255, the minimum length is 5 characters !!!`,
     });

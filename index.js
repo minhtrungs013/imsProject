@@ -1,19 +1,24 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
+const candidate= require("./routers/candidate")
 dotenv.config();
 const port = process.env.PORT;
-// fix bug error CORS
+
 const cors = require("cors");
 app.use(cors());
-// import Router
+
 const authRoute = require("./routers/auth");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-//ROUTES
+
 app.use("/", authRoute);
+app.use
+
+app.use(candidate);
+app.use
 
 app.listen(port, () => {
   console.log("App start success");
