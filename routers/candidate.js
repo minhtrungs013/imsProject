@@ -1,12 +1,15 @@
-var express = require("express");
-var router = express.Router();
-var candidateController = require("../controllers/candidateController");
+const express = require("express");
+const router = express.Router();
+const candidateController = require("../controllers/candidateController");
 
-router.get("/GetListCandidates", candidateController.getcandidate);
-router.get("/GetListCandidate", candidateController.getdetail);
-router.get("/GetListCandidate/:id", candidateController.getbatch);
-router.post("/createCandidate", candidateController.createcandidate);
-router.put('/updateCandidate',candidateController.updatecandidate)
-router.delete("/deleteCandidate/:id", candidateController.removecandidate);
+router.get("/candidate", candidateController.getcandidate);
+router.get("/candidate/batch/:id", candidateController.getBatch);
+
+router.get("/mentor", candidateController.getMentor);
+router.get("/dg", candidateController.getDG);
+router.get("/internshipcourse", candidateController.getInternshipCourse);
+
+router.put("/candidate/:id", candidateController.update);
+router.delete("/candidate/:id", candidateController.remove);
 
 module.exports = router;
