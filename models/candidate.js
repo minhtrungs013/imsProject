@@ -5,7 +5,7 @@ const Candidate = (candidate) => {
   this.idCandidate = candidate.idCandidate;
   this.fullName = candidate.fullName;
   this.tel = candidate.tel;
-  this.email = candidate.email;
+  this.emailCandidate = candidate.emailCandidate;
   this.idDG = candidate.idDG;
   this.interviewTime = candidate.interviewTime;
   this.interviewDate = candidate.interviewDate;
@@ -29,15 +29,16 @@ const Candidate = (candidate) => {
   this.internshipSchedule = candidate.internshipSchedule;
   this.GPA = candidate.GPA;
   this.idInternshipCourse = candidate.idInternshipCourse;
-  this.GraduationYear = candidate.GraduationYear;
-  this.ProjectExperience = candidate.ProjectExperience;
-  this.ExpectedGraduationSchedule = candidate.ExpectedGraduationSchedule;
-  this.RemainingSubjects = candidate.RemainingSubjects;
-  this.CovidVaccinationiInformation = candidate.CovidVaccinationiInformation;
-  this.CertificationDate = candidate.CertificationDate;
-  this.CovidVaccinationCertificate = candidate.CovidVaccinationCertificate;
-  this.InterviewLink = candidate.InterviewLink;
+  this.graduationYear = candidate.GraduationYear;
+  this.projectExperience = candidate.ProjectExperience;
+  this.expectedGraduationSchedule = candidate.ExpectedGraduationSchedule;
+  this.remainingSubjects = candidate.RemainingSubjects;
+  this.covidVaccinationiInformation = candidate.CovidVaccinationiInformation;
+  this.certificationDate = candidate.CertificationDate;
+  this.covidVaccinationCertificate = candidate.CovidVaccinationCertificate;
+  this.interViewLink = candidate.InterviewLink;
   this.pcType = candidate.pcType;
+  this.deleteAtt= candidate.deleteAtt;
 };
 Candidate.getAll = async (condition, columns, page, limit) => {
   try {
@@ -70,7 +71,7 @@ Candidate.getBatch = async (condition, columns, page, limit) => {
     const where = buildWhere(condition);
     let listColumn = `candidate.idCandidate,
         candidate.fullName,
-        candidate.email, 
+        candidate.emailCandidate, 
         mentor.fullNameMentor,
         dg.nameDG,
         candidate.internshipDomain,

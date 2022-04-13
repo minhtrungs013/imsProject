@@ -57,7 +57,7 @@ const update = async (req, res) => {
   const {
     fullName,
     tel,
-    email,
+    emailCandidate,
     idDG,
     interviewTime,
     interviewDate,
@@ -81,20 +81,21 @@ const update = async (req, res) => {
     internshipSchedule,
     GPA,
     idInternshipCourse,
-    GraduationYear,
-    ProjectExperience,
-    ExpectedGraduationSchedule,
-    RemainingSubjects,
-    CovidVaccinationiInformation,
-    CertificationDate,
-    CovidVaccinationCertificate,
-    InterviewLink,
+    graduationYear,
+    projectExperience,
+    expectedGraduationSchedule,
+    remainingSubjects,
+    covidVaccinationiInformation,
+    certificationDate,
+    covidVaccinationCertificate,
+    interViewLink,
+    deleteAtt,
     pcType,
   } = req.body;
   if (
     !fullName ||
     !tel ||
-    !email ||
+    !emailCandidate ||
     !idDG ||
     !interviewTime ||
     !interviewDate ||
@@ -118,14 +119,15 @@ const update = async (req, res) => {
     !internshipSchedule ||
     !GPA ||
     !idInternshipCourse ||
-    !GraduationYear ||
-    !ProjectExperience ||
-    !ExpectedGraduationSchedule ||
-    !RemainingSubjects ||
-    !CovidVaccinationiInformation ||
-    !CertificationDate ||
-    !CovidVaccinationCertificate ||
-    !InterviewLink ||
+    !graduationYear ||
+    !projectExperience ||
+    !expectedGraduationSchedule ||
+    !remainingSubjects ||
+    !covidVaccinationiInformation ||
+    !certificationDate ||
+    !covidVaccinationCertificate ||
+    !interViewLink ||
+    !deleteAtt ||
     !pcType
   ) {
     return res
@@ -142,7 +144,7 @@ const update = async (req, res) => {
       message: `Please re-enter the phone !`,
     });
   }
-  if (!emailRegex.test(email)) {
+  if (!emailRegex.test(emailCandidate)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: "This is not an email !",
     });
@@ -267,51 +269,51 @@ const update = async (req, res) => {
       message: `You need to enter the correct information Internship Course`,
     });
   }
-  if (GraduationYear.length < 5 || GraduationYear.length > 255) {
+  if (graduationYear.length < 5 || graduationYear.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The GraduationYear is maximum length is 255, the minimum length is 5 characters`,
     });
   }
-  if (ProjectExperience.length < 5 || ProjectExperience.length > 255) {
+  if (projectExperience.length < 5 || projectExperience.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The ProjectExperience is maximum length is 255, the minimum length is 5 characters`,
     });
   }
   if (
-    ExpectedGraduationSchedule.length < 5 ||
-    ExpectedGraduationSchedule.length > 255
+    expectedGraduationSchedule.length < 5 ||
+    expectedGraduationSchedule.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The ExpectedGraduationSchedule is maximum length is 255, the minimum length is 5 characters`,
     });
   }
-  if (RemainingSubjects.length < 5 || RemainingSubjects.length > 255) {
+  if (remainingSubjects.length < 5 || remainingSubjects.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The RemainingSubjects is maximum length is 255, the minimum length is 5 characters`,
     });
   }
   if (
-    CovidVaccinationiInformation.length < 5 ||
-    CovidVaccinationiInformation.length > 255
+    covidVaccinationiInformation.length < 5 ||
+    covidVaccinationiInformation.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The CovidVaccinationiInformation is maximum length is 255, the minimum length is 5 characters `,
     });
   }
-  if (CertificationDate.length < 5 || CertificationDate.length > 255) {
+  if (certificationDate.length < 5 || certificationDate.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The CertificationDate ismaximum length is 255, the minimum length is 5 characters `,
     });
   }
   if (
-    CovidVaccinationCertificate.length < 5 ||
-    CovidVaccinationCertificate.length > 255
+    covidVaccinationCertificate.length < 5 ||
+    covidVaccinationCertificate.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The CovidVaccinationCertificate is maximum length is 255, the minimum length is 5 characters `,
     });
   }
-  if (InterviewLink.length < 5 || InterviewLink.length > 255) {
+  if (interViewLink.length < 5 || interViewLink.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       message: `The InterviewLink is maximum length is 255, the minimum length is 5 characters`,
     });
@@ -321,11 +323,16 @@ const update = async (req, res) => {
       message: `You need to enter the correct information Pc Type`,
     });
   }
+  if (deleteAtt === "") {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      message: `You need to enter the correct information `,
+    });
+  }
 
   const result = await candidate.update({
     fullName: fullName,
     tel: tel,
-    email: email,
+    emailCandidate: emailCandidate,
     idDG: idDG,
     interviewTime: interviewTime,
     interviewDate: interviewDate,
@@ -349,15 +356,16 @@ const update = async (req, res) => {
     internshipSchedule: internshipSchedule,
     GPA: GPA,
     idInternshipCourse: idInternshipCourse,
-    GraduationYear: GraduationYear,
-    ProjectExperience: ProjectExperience,
-    ExpectedGraduationSchedule: ExpectedGraduationSchedule,
-    RemainingSubjects: RemainingSubjects,
-    CovidVaccinationiInformation: CovidVaccinationiInformation,
-    CertificationDate: CertificationDate,
-    CovidVaccinationCertificate: CovidVaccinationCertificate,
-    InterviewLink: InterviewLink,
+    graduationYear: graduationYear,
+    projectExperience: projectExperience,
+    expectedGraduationSchedule: expectedGraduationSchedule,
+    remainingSubjects: remainingSubjects,
+    covidVaccinationiInformation: covidVaccinationiInformation,
+    certificationDate: certificationDate,
+    covidVaccinationCertificate: covidVaccinationCertificate,
+    interViewLink: interViewLink,
     pcType: pcType,
+    deleteAtt: deleteAtt,
     idCandidate: id,
   });
   return res.status(statusCodes.OK).json({
