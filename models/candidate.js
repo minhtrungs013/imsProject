@@ -85,43 +85,6 @@ Candidate.getBatch = async (condition, columns, page, limit) => {
   }
 };
 
-//mentor
-Candidate.getMentor = async (condition) => {
-  try {
-    const listColumn = "idMentor,fullNameMentor";
-    const strSql = `SELECT ${listColumn} FROM mentor  `;
-    const query = util.promisify(connect.query).bind(connect);
-    const result = await query(strSql);
-    return condition(result);
-  } catch (err) {
-    console.log(err.message);
-  }
-};
-//dg
-Candidate.getDG = async (condition) => {
-  try {
-    const listColumn = "*";
-    const strSql = `SELECT ${listColumn} FROM dg  `;
-    const query = util.promisify(connect.query).bind(connect);
-    const result = await query(strSql);
-    return condition(result);
-  } catch (err) {
-    console.log(err.message);
-  }
-};
-//internshipcourse
-Candidate.getInternshipCourse = async (condition) => {
-  try {
-    const listColumn = "idInternshipCourse, nameCoure";
-    const strSql = `SELECT ${listColumn} FROM internshipcourse  `;
-    const query = util.promisify(connect.query).bind(connect);
-    const result = await query(strSql);
-    return condition(result);
-  } catch (err) {
-    console.log(err.message);
-  }
-};
-
 Candidate.update = async (condition) => {
   try {
     const where = buildWhere(condition);
@@ -158,6 +121,7 @@ Candidate.getTotalCount = async (condition) => {
     throw err;
   }
 };
+
 const buildWhere = (condition) => {
   let strWhere = "1=1";
 

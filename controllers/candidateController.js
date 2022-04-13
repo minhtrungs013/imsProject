@@ -40,21 +40,6 @@ const getBatch = async (req, res) => {
     total: total,
   });
 };
-const getMentor = (req, res) => {
-  candidate.getMentor((response) => {
-    return res.status(statusCodes.OK).json(response);
-  });
-};
-const getDG = (req, res) => {
-  candidate.getDG((response) => {
-    return res.status(statusCodes.OK).json(response);
-  });
-};
-const getInternshipCourse = (req, res) => {
-  candidate.getInternshipCourse((response) => {
-    return res.status(statusCodes.OK).json(response);
-  });
-};
 
 const remove = async (req, res) => {
   const id = req.params.id;
@@ -267,12 +252,9 @@ const update = async (req, res) => {
       message: `The maximum length is 255, the minimum length is 5 characters !!!`,
     });
   }
-  if (
-    internshipSchedule !== "Full time" &&
-    internshipSchedule !== "Part time"
-  ) {
+  if (internshipSchedule === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: `Internship Schedule is only Full time or Part time`,
+      message: `You need to enter the correct information Internship Schedule`,
     });
   }
   if (GPA.length !== 3 && GPA.length !== 4) {
@@ -282,7 +264,7 @@ const update = async (req, res) => {
   }
   if (idInternshipCourse === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: `You need to enter the correct information`,
+      message: `You need to enter the correct information Internship Course`,
     });
   }
   if (GraduationYear.length < 5 || GraduationYear.length > 255) {
@@ -334,9 +316,9 @@ const update = async (req, res) => {
       message: `The InterviewLink is maximum length is 255, the minimum length is 5 characters`,
     });
   }
-  if (pcType !== "Laptop" && pcType !== "PC Company") {
+  if (pcType === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: `Please input "PC Company" or "Laptop" !!!`,
+      message: `You need to enter the correct information Pc Type`,
     });
   }
 
@@ -384,12 +366,11 @@ const update = async (req, res) => {
   });
 };
 
+
+
 module.exports = {
   getcandidate,
   getBatch,
   remove,
-  getMentor,
-  getDG,
-  getInternshipCourse,
-  update,
+  update
 };

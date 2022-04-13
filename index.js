@@ -13,12 +13,9 @@ const authRoute = require("./routers/auth");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-
 app.use("/", authRoute);
-app.use
 
 app.use(candidate);
-app.use
 
 app.listen(port, () => {
   console.log("App start success");
