@@ -5,10 +5,12 @@ const Candidate = (candidate) => {
   this.idCandidate = candidate.idCandidate;
   this.fullName = candidate.fullName;
   this.tel = candidate.tel;
-  this.email = candidate.email;
+  this.emailCandidate = candidate.emailCandidate;
   this.idDG = candidate.idDG;
   this.interviewTime = candidate.interviewTime;
   this.interviewDate = candidate.interviewDate;
+  this.interviewer = candidate.interviewer;
+  this.interviewLink = candidate.interviewLink;
   this.status = candidate.status;
   this.remark = candidate.remark;
   this.idMentor = candidate.idMentor;
@@ -41,19 +43,19 @@ const Candidate = (candidate) => {
 };
 Candidate.getInterview = async (condition, columns, page, limit) => {
   try {
-    let listColumn = `candidate.idCandidate,
-      candidate.fullName,
-      candidate.email,
-      candidate.interviewDate,
-      candidate.interviewTime,
-      mentor.fullNameMentor,
-      candidate.InterviewLink,
-      candidate.comments,
-      candidate.technicalComments,
-      candidate.technicalScore,
-      candidate.attitude,
-      candidate.englishCommunication,
-      candidate.status`;
+    let listColumn = `candidates.idCandidate,
+      candidates.fullName,
+      candidates.emailCandidate,
+      candidates.interviewDate,
+      candidates.interviewTime,
+      candidates.interviewer,
+      candidates.interviewLink,
+      candidates.comments,
+      candidates.technicalComments,
+      candidates.technicalScore,
+      candidates.attitude,
+      candidates.englishCommunication,
+      candidates.status`;
     if (columns && columns.length > 0) {
       listColumn = columns.join();
     }
@@ -62,8 +64,8 @@ Candidate.getInterview = async (condition, columns, page, limit) => {
       offset = (page - 1) * limit;
     }
     const where = buildWhere(condition);
-    const strSql = `SELECT ${listColumn} FROM candidate INNER JOIN mentor
-      WHERE candidate.idMentor = mentor.idMentor AND interviewDate != '' AND ${where} LIMIT ${limit} OFFSET ${offset} `;
+    const whereColumn = `interviewDate != ''`
+    const strSql = `SELECT ${listColumn} FROM ${Table} WHERE ${whereColumn} AND ${where} LIMIT ${limit} OFFSET ${offset} `;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -73,7 +75,8 @@ Candidate.getInterview = async (condition, columns, page, limit) => {
 Candidate.getTotalCount = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const strSql = `SELECT count(*) as totalCount FROM candidate WHERE ${where}`;
+    const whereColumn = `interviewDate != ''`
+    const strSql = `SELECT count(*) as totalCount FROM ${Table} WHERE ${whereColumn} AND ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(strSql);
     return result[0].totalCount;
@@ -83,29 +86,17 @@ Candidate.getTotalCount = async (condition) => {
   }
 };
 
-Candidate.search = async (condition) => {
-  console.log(condition);
+Candidate.delete = async (condition) => {
   try {
-    let listColumn = `candidate.idCandidate,
-    candidate.fullName,
-    candidate.email,
-    candidate.interviewDate,
-    candidate.interviewTime,
-    mentor.fullNameMentor,
-    candidate.InterviewLink,
-    candidate.comments,
-    candidate.technicalComments,
-    candidate.technicalScore,
-    candidate.attitude,
-    candidate.englishCommunication,
-    candidate.status`;
+    const valueNull = 'null'
+    const setColum = `interviewDate = ${valueNull}, interviewTime = ${valueNull}, interviewer = ${valueNull}, interviewLink = ${valueNull}`
     const where = buildWhere(condition);
-    const strSql = `SELECT ${listColumn} FROM candidate INNER JOIN mentor
-    WHERE candidate.idMentor = mentor.idMentor AND ${where}`;
+    const sql = `UPDATE ${Table} SET ${setColum} WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
-    return await query(strSql);
+    const result = await query(sql);
+    return result.affectedRows !== 0;
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
     throw err;
   }
 };
@@ -113,11 +104,12 @@ Candidate.search = async (condition) => {
 const buildWhere = (condition) => {
   let strWhere = "1=1";
   if (condition.idCandidate) {
-    strWhere += " AND idCandidate " + condition.idCandidate;
+    strWhere += " AND idCandidate = " + condition.idCandidate;
   }
   if (condition.fullName) {
     strWhere += ' AND fullName LIKE "%' + condition.fullName + '%" ';
   }
   return strWhere;
 };
+const Table = "candidates"
 module.exports = Candidate;

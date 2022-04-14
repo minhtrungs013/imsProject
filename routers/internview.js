@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const {get,search} = require("../controllers/internviewController");
+const {get, del} = require("../controllers/internviewController");
 
-router.get("/internview/", get);
-router.get("/internview/search/:fullName", search);
+router.get("/internview", get);
+router.delete("/internview/:id", del);
 module.exports = router;
