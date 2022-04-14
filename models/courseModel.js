@@ -13,10 +13,10 @@ const Internshipcourse = (internshipcourse) => {
 Internshipcourse.getList = async (condition) => {
   try {
     const listColumn = "*";
-    const strSql = `SELECT ${listColumn} FROM internshipcourse `;
+    const where = buildWhere(condition);
+    const strSql = `SELECT ${listColumn} FROM ${table} WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
-    const result = await query(strSql);
-    return condition(result);
+    return await query(strSql);
   } catch (err) {
     console.log(err);
   }
@@ -26,7 +26,7 @@ Internshipcourse.getId = async (condition) => {
   try {
     const where = buildWhere(condition);
     const listColumn = "*";
-    const strSql = `SELECT ${listColumn} FROM internshipcourse WHERE ${where}`;
+    const strSql = `SELECT ${listColumn} FROM ${table} WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -35,44 +35,28 @@ Internshipcourse.getId = async (condition) => {
   }
 };
 
-Internshipcourse.create = async (condition, result) => {
+Internshipcourse.create = async (condition) => {
   try {
-    const sql ='SELECT * FROM internshipcourse WHERE nameCoure = "' + condition.nameCoure + '" ';
-    const strSql = `INSERT INTO internshipcourse SET ?`;
+    const strSql = `INSERT INTO ${table} SET ?`;
     const query = util.promisify(connect.query).bind(connect);
-    await query(sql, async (err, res) => {
-      if (res[0] === undefined) {
-        await query(strSql, condition, (err, response) => {
-          return result({
-            idInternshipCourse: response.insertId,
-            ...condition,
-          });
-        });
-      }
-      return result({ error: `Tên ${condition.nameCoure} đã tồn tại` });
-    });
+    const result = await query(strSql, condition);
+    if (result.affectedRows === 0) {
+      return 0;
+    }
+    return result.insertId;
   } catch (err) {
-    result(err);
+    console.log(err);
   }
 };
-Internshipcourse.update = async (condition, results) => {
+Internshipcourse.update = async (condition) => {
   try {
-    const sql ='SELECT * FROM internshipcourse WHERE nameCoure = "' + condition.nameCoure + '" ';
     const where = buildWhere(condition);
-    const sqlStr = `UPDATE internshipcourse SET ? WHERE ${where}`;
+    const sql = `UPDATE ${table} SET ? WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
-    await query(sql, async (err, res) => {
-      if (res[0] === undefined) {
-        const result = await query(sqlStr, condition);
-        if (result.affectedRows !== 0) {
-          return results({ message: "Cập nhật thành công" });
-        }
-        return results({ error: "ID không tồn tại" });
-      }
-      return results({ error: `Tên ${condition.nameCoure} Đã tồn tại` });
-    });
+    const result = await query(sql, condition);
+    return result.affectedRows !== 0;
   } catch (err) {
-    results(err);
+    console.log(err);
     throw err;
   }
 };
@@ -80,20 +64,23 @@ Internshipcourse.update = async (condition, results) => {
 Internshipcourse.delete = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const sql = `DELETE FROM internshipcourse WHERE ${where}`;
+    const sql = `DELETE FROM ${table} WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql);
     return result.affectedRows !== 0;
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
     throw err;
   }
 };
-
+const table = "internshipcourse";
 const buildWhere = (condition) => {
   let strWhere = "1=1";
   if (condition.idInternshipCourse) {
     strWhere += " AND idInternshipCourse = " + condition.idInternshipCourse;
+  }
+  if (condition.nameCoures) {
+    strWhere += " AND nameCoure = '" + condition.nameCoures +"' ";
   }
   return strWhere;
 };
