@@ -4,14 +4,19 @@ const dotenv = require("dotenv");
 dotenv.config();
 const getList = async (req, res) => {
   await courseModel.getList((response) => {
-    return res.status(statusCodes.OK).json({data: response});
+    return res.status(statusCodes.OK).json({ data: response });
   });
 };
 
 const details = async (req, res) => {
   const id = req.params.id;
+  if (id === "undefined") {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: "Bạn cần điền đầy đủ thông tin" });
+  }
   const results = await courseModel.getId({ idInternshipCourse: id });
-  return res.status(statusCodes.OK).json({data: results[0]});
+  return res.status(statusCodes.OK).json({ data: results[0] });
 };
 
 const create = async (req, res) => {
@@ -19,17 +24,17 @@ const create = async (req, res) => {
   if (!nameCoure || !dateStart || !dateEnd || !status || !kindOfInternship) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "You need to enter all the information" });
+      .json({ error: "Bạn cần điền đầy đủ thông tin" });
   }
   if (nameCoure.length > 255 || nameCoure.length < 6) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Minimum 6 characters and maximum 255 characters" });
+      .json({ error: "Tối thiểu 6 kí tự và tối đa 255 kí tự" });
   }
   if (dateStart >= dateEnd) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Start date must be less than end date" });
+      .json({ error: "Ngày bắt đầu phải bé hơn ngày kết thúc" });
   }
   if (
     status !== courseModel.STATUS_DONE &&
@@ -37,7 +42,7 @@ const create = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "status must be Done or In Progress" });
+      .json({ error: "Trang thái thực tập phải là Done hoặc In progress" });
   }
   if (
     kindOfInternship !== courseModel.KOD_FULL_TIME &&
@@ -45,7 +50,7 @@ const create = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "kind Of Internship must be Fulltime or Parttime" });
+      .json({ error: "Loại thực tập phải là Fulltime hoặc Parttime" });
   }
   await courseModel.create(
     { nameCoure, dateStart, dateEnd, status, kindOfInternship },
@@ -61,17 +66,17 @@ const update = async (req, res) => {
   if (!nameCoure || !dateStart || !dateEnd || !status || !kindOfInternship) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "You need to enter all the information" });
+      .json({ error: "Bạn cần điền đầy đủ thông tin" });
   }
   if (nameCoure.length > 255 || nameCoure.length < 6) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Minimum 6 characters and maximum 255 characters" });
+      .json({ error: "Tối thiểu 6 kí tự và tối đa 255 kí tự" });
   }
   if (dateStart >= dateEnd) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Start date must be less than end date" });
+      .json({ error: "Ngày bắt đầu phải bé hơn ngày kết thúc" });
   }
   if (
     status !== courseModel.STATUS_DONE &&
@@ -79,7 +84,7 @@ const update = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "status must be Done or In Progress" });
+      .json({ error: "Trang thái thực tập phải là Done hoặc In progress" });
   }
   if (
     kindOfInternship !== courseModel.KOD_FULL_TIME &&
@@ -87,20 +92,21 @@ const update = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "kind Of Internship must be Fulltime or Parttime" });
+      .json({ error: "Loại thực tập phải là Fulltime hoặc Parttime" });
   }
-  const result = await courseModel.update({
-    idInternshipCourse,
-    nameCoure,
-    dateStart,
-    dateEnd,
-    status,
-    kindOfInternship,
-  });
-  return res.status(statusCodes.OK).json({
-    status: result,
-    message: result ? "Success" : "Update not exists",
-  });
+  const result = await courseModel.update(
+    {
+      idInternshipCourse,
+      nameCoure,
+      dateStart,
+      dateEnd,
+      status,
+      kindOfInternship,
+    },
+    (response) => {
+      return res.status(statusCodes.OK).json({ status: response });
+    }
+  );
 };
 
 const del = async (req, res) => {
