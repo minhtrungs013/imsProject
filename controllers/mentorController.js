@@ -29,7 +29,7 @@ const remove = async (req, res) => {
   const result = await mentorModel.remove({ mentorId: id });
   return res.status(statusCodes.OK).json({
     status: result,
-    message: result ? "Delete successfully !!!" : "Mentor not exists",
+    message: result ? "Xóa thành công !!!" : "Mentor không tồn tại",
   });
 };
 
@@ -64,14 +64,14 @@ const create = async (req, res) => {
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
   const {
-    fullNameMentor,
-    dayOfBirth,
-    address,
-    workplace,
-    email,
-    position,
-    idDG,
-    idInternshipCourse,
+    fullNameMentor: fullNameMentor,
+    dayOfBirth: dayOfBirth,
+    address: address,
+    workplace: workplace,
+    email: email,
+    position: position,
+    idDG: idDG,
+    idInternshipCourse: idInternshipCourse,
   } = req.body;
   if (
     !fullNameMentor ||
@@ -85,38 +85,38 @@ const create = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ message: "Please enter information" });
+      .json({ error: "Vui lòng điền đẩy đủ thông tin !" });
   }
   if (fullNameMentor.length < 5 || fullNameMentor.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: `The maximum length is 255, the minimum length is 5 characters !!!`,
+      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
     });
   }
-  if (workplace.length > 255) {
+  if (workplace.length < 5 || workplace.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid workplace length !!!",
+      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
     });
   }
 
-  if (address.length > 255) {
+  if (address.length < 5 || address.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid address length !!!",
+      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
     });
   }
-  if (position.length > 255) {
+  if (position.length < 5 || position.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid position length !!!",
+      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
     });
   }
   if (dayOfBirth < "1960/01/01") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid date of birth must be greater than 01/01/1960 !!!",
+      error: " Ngày sinh không hợp lệ phải lớn hơn 01/01/1960 !!!",
     });
   }
 
   if (!emailRegex.test(email)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid email !!!",
+      error: "Email không hợp lệ !!!",
     });
   }
 
@@ -133,8 +133,8 @@ const create = async (req, res) => {
   return res.status(statusCodes.OK).json({
     status: results,
     message: results
-      ? "Create successfully"
-      : "DG or InternshipCourse not exits!!!",
+      ? "Thêm Thành công !!!"
+      : "idDG hoặc idInternshipCourse không tồn tại !!!",
   });
 };
 
@@ -144,14 +144,14 @@ const update = async (req, res) => {
 
   const id = req.params.id;
   const {
-    fullNameMentor,
-    dayOfBirth,
-    address,
-    workplace,
-    email,
-    position,
-    idDG,
-    idInternshipCourse,
+    fullNameMentor: fullNameMentor,
+    dayOfBirth: dayOfBirth,
+    address: address,
+    workplace: workplace,
+    email: email,
+    position: position,
+    idDG: idDG,
+    idInternshipCourse: idInternshipCourse,
   } = req.body;
   if (
     !fullNameMentor ||
@@ -165,38 +165,38 @@ const update = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ message: "Please enter information" });
+      .json({ error: "Vui lòng điền đẩy đủ thông tin " });
   }
   if (fullNameMentor.length < 5 || fullNameMentor.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: `The maximum length is 255, the minimum length is 5 characters !!!`,
+      error: `Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!`,
     });
   }
-  if (workplace.length > 255) {
+  if (workplace.length < 5 || workplace.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid workplace length !!!",
+      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
     });
   }
 
-  if (address.length > 255) {
+  if (address.length < 5 || address.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid address length !!!",
+      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
     });
   }
-  if (position.length > 255) {
+  if (position.length < 5 || position.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid position length !!!",
+      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
     });
   }
   if (dayOfBirth < "1960/01/01") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid date of birth must be greater than 01/01/1960 !!!",
+      error: "Ngày sinh không hợp lệ phải lớn hơn 01/01/1960 !!!",
     });
   }
 
   if (!emailRegex.test(email)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: "Invalid email !!!",
+      error: "Email không hợp lệ !!!",
     });
   }
 
@@ -213,7 +213,7 @@ const update = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     data: result,
-    message: result ? "Update successfully" : "Mentor not exits !!!",
+    message: result ? "Cập nhật thành công !!!" : "Mentor không tồn tại !!!",
   });
 };
 
