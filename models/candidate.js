@@ -84,7 +84,7 @@ Candidate.getTotalCount = async (condition) => {
 };
 
 Candidate.search = async (condition) => {
-  console.log(condition)
+  console.log(condition);
   try {
     let listColumn = `candidate.idCandidate,
     candidate.fullName,
@@ -102,7 +102,6 @@ Candidate.search = async (condition) => {
     const where = buildWhere(condition);
     const strSql = `SELECT ${listColumn} FROM candidate INNER JOIN mentor
     WHERE candidate.idMentor = mentor.idMentor AND ${where}`;
-    console.log(strSql);
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -118,9 +117,6 @@ const buildWhere = (condition) => {
   }
   if (condition.fullName) {
     strWhere += ' AND fullName LIKE "%' + condition.fullName + '%" ';
-  }
-  if (condition.fullNameMentor) {
-    strWhere += ' OR mentor.fullNameMentor LIKE "%' + condition.fullNameMentor + '%" ';
   }
   return strWhere;
 };

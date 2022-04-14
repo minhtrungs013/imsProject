@@ -15,8 +15,8 @@ const get = async (req, res) => {
 };
 
 const search = async (req, res) => {
-  const { fullName, fullNameMentor } = req.params;
-  const results = await candidateModel.search({ fullName, fullNameMentor });
+  const fullName= req.params;
+  const results = await candidateModel.search(fullName);
   return res.status(statusCodes.OK).json({
     data: results,
   });
