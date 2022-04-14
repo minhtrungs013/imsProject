@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //ROUTES
-app.use(requireToken, authRoute);
+app.use(authRoute);
 app.use(requireToken, courseRoute);
 app.use(requireToken, mentor);
 app.use(requireToken, importCandidate);
