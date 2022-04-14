@@ -63,7 +63,7 @@ Candidate.getInterview = async (condition, columns, page, limit) => {
     }
     const where = buildWhere(condition);
     const strSql = `SELECT ${listColumn} FROM candidate INNER JOIN mentor
-      WHERE candidate.idMentor = mentor.idMentor AND ${where}  LIMIT ${limit} OFFSET ${offset} `;
+      WHERE candidate.idMentor = mentor.idMentor AND interviewDate != '' AND ${where} LIMIT ${limit} OFFSET ${offset} `;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -82,10 +82,45 @@ Candidate.getTotalCount = async (condition) => {
     throw err;
   }
 };
+
+Candidate.search = async (condition) => {
+  console.log(condition)
+  try {
+    let listColumn = `candidate.idCandidate,
+    candidate.fullName,
+    candidate.email,
+    candidate.interviewDate,
+    candidate.interviewTime,
+    mentor.fullNameMentor,
+    candidate.InterviewLink,
+    candidate.comments,
+    candidate.technicalComments,
+    candidate.technicalScore,
+    candidate.attitude,
+    candidate.englishCommunication,
+    candidate.status`;
+    const where = buildWhere(condition);
+    const strSql = `SELECT ${listColumn} FROM candidate INNER JOIN mentor
+    WHERE candidate.idMentor = mentor.idMentor AND ${where}`;
+    console.log(strSql);
+    const query = util.promisify(connect.query).bind(connect);
+    return await query(strSql);
+  } catch (err) {
+    console.log(err.message);
+    throw err;
+  }
+};
+
 const buildWhere = (condition) => {
   let strWhere = "1=1";
   if (condition.idCandidate) {
     strWhere += " AND idCandidate " + condition.idCandidate;
+  }
+  if (condition.fullName) {
+    strWhere += ' AND fullName LIKE "%' + condition.fullName + '%" ';
+  }
+  if (condition.fullNameMentor) {
+    strWhere += ' OR mentor.fullNameMentor LIKE "%' + condition.fullNameMentor + '%" ';
   }
   return strWhere;
 };

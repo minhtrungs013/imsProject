@@ -14,4 +14,12 @@ const get = async (req, res) => {
   });
 };
 
-module.exports = { get: get };
+const search = async (req, res) => {
+  const { fullName, fullNameMentor } = req.params;
+  const results = await candidateModel.search({ fullName, fullNameMentor });
+  return res.status(statusCodes.OK).json({
+    data: results,
+  });
+};
+
+module.exports = { get: get, search: search, };

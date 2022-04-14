@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
+
 const cors = require("cors");
 app.use(cors());
 const {requireToken} = require("./middleware/index")
@@ -9,7 +10,7 @@ const {requireToken} = require("./middleware/index")
 const authRoute = require("./routers/auth");
 const courseRoute = require("./routers/course");
 const mentor = require("./routers/mentor");
-const candidateRoute = require("./routers/candidate");
+const candidateRoute = require("./routers/internview");
 
 
 dotenv.config();
