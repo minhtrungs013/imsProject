@@ -147,7 +147,7 @@ const del = async (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: `Khóa thực tập này không tồn tại trong hệ thống !` });
   }
-  const result = await courseModel.delete({ idInternshipCourse: id });
+  const result = await courseModel.delete({ idInternshipCourse: idInternshipCourse });
   return res.status(statusCodes.OK).json({
     status: result,
     message: "Xóa thành công",
