@@ -75,10 +75,10 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const idInternshipCourse = req.params.id;
-  const courseId = await courseModel.getList({
+  const getCourse = await courseModel.getList({
     idInternshipCourse: idInternshipCourse,
   });
-  if (!courseId.length) {
+  if (!getCourse.length) {
     return res
       .status(statusCodes.BAD_REQUEST)
       .json({ error: "Khóa thực tập không tồn tại trong hệ thống !" });
@@ -139,10 +139,10 @@ const update = async (req, res) => {
 
 const del = async (req, res) => {
   const idInternshipCourse = req.params.id;
-  const courseId = await courseModel.getList({
+  const getCourse = await courseModel.getList({
     idInternshipCourse: idInternshipCourse,
   });
-  if (!courseId.length) {
+  if (!getCourse.length) {
     return res
       .status(statusCodes.BAD_REQUEST)
       .json({ error: `Khóa thực tập này không tồn tại trong hệ thống !` });
