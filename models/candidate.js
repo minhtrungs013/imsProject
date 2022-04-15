@@ -39,6 +39,7 @@ const Candidate = (candidate) => {
   this.CertificationDate = candidate.CertificationDate;
   this.CovidVaccinationCertificate = candidate.CovidVaccinationCertificate;
   this.InterviewLink = candidate.InterviewLink;
+  this.emailInterviewer = candidate.emailInterviewer;
   this.pcType = candidate.pcType;
 };
 Candidate.getInterview = async (condition, columns, page, limit) => {
@@ -89,7 +90,7 @@ Candidate.getTotalCount = async (condition) => {
 Candidate.delete = async (condition) => {
   try {
     const valueNull = 'null'
-    const setColum = `interviewDate = ${valueNull}, interviewTime = ${valueNull}, interviewer = ${valueNull}, interviewLink = ${valueNull}`
+    const setColum = `interviewDate = ${valueNull}, interviewTime = ${valueNull}, interviewer = ${valueNull}, interviewLink = ${valueNull}, emailInterviewer = ${valueNull}`
     const where = buildWhere(condition);
     const sql = `UPDATE ${Table} SET ${setColum} WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);

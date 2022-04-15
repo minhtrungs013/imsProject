@@ -15,7 +15,7 @@ const get = async (req, res) => {
   if(results[0] === undefined){
     return res
     .status(statusCodes.BAD_REQUEST)
-    .json({ error: `Không có kết quả cho từ khóa : ${fullName}` });
+    .json({ error: "Không có kết quả cho từ khóa này !"});
   }
   return res.status(statusCodes.OK).json({
     data: results,
@@ -25,7 +25,7 @@ const get = async (req, res) => {
 const del = async (req, res) => {
   const idCandidate = req.params.id;
   let page = 1,
-  limit = 20;
+  limit = 1;
   const courseId = await candidateModel.getInterview({idCandidate: idCandidate}, [], page, limit);
   if (!courseId.length) {
     return res
