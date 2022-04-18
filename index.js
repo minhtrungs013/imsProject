@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const candidate= require("./routers/candidate")
 dotenv.config();
+const { requireToken } = require("./middleware/index");
 const port = process.env.PORT;
 
 const cors = require("cors");
@@ -15,7 +16,7 @@ app.use(express.json());
 
 app.use("/", authRoute);
 
-app.use(candidate);
+app.use(requireToken,candidate);
 
 app.listen(port, () => {
   console.log("App start success");
