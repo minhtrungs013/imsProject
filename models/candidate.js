@@ -1,44 +1,45 @@
 const connect = require("../config/db");
 const util = require("util");
 
-const Candidate = (candidate) => {
-  this.idCandidate = candidate.idCandidate;
-  this.fullName = candidate.fullName;
-  this.tel = candidate.tel;
-  this.emailCandidate = candidate.emailCandidate;
-  this.idDG = candidate.idDG;
-  this.interviewTime = candidate.interviewTime;
-  this.interviewDate = candidate.interviewDate;
-  this.status = candidate.status;
-  this.remark = candidate.remark;
-  this.idMentor = candidate.idMentor;
-  this.technicalComments = candidate.technicalComments;
-  this.technicalScore = candidate.technicalScore;
-  this.attitude = candidate.attitude;
-  this.englishCommunication = candidate.englishCommunication;
-  this.comments = candidate.comments;
-  this.remarks = candidate.remarks;
-  this.internshipDomain = candidate.internshipDomain;
-  this.preferredSkills = candidate.preferredSkills;
-  this.university = candidate.university;
-  this.faculty = candidate.faculty;
-  this.currentYearofStudy = candidate.currentYearOfStudy;
-  this.studentID = candidate.studentID;
-  this.preferredInternshipStartDate = candidate.preferredInternshipStartDate;
-  this.preferredInternshipDuration = candidate.preferredInternshipDuration;
-  this.internshipSchedule = candidate.internshipSchedule;
-  this.GPA = candidate.GPA;
-  this.idInternshipCourse = candidate.idInternshipCourse;
-  this.graduationYear = candidate.GraduationYear;
-  this.projectExperience = candidate.ProjectExperience;
-  this.expectedGraduationSchedule = candidate.ExpectedGraduationSchedule;
-  this.remainingSubjects = candidate.RemainingSubjects;
-  this.covidVaccinationiInformation = candidate.CovidVaccinationiInformation;
-  this.certificationDate = candidate.CertificationDate;
-  this.covidVaccinationCertificate = candidate.CovidVaccinationCertificate;
-  this.interViewLink = candidate.InterviewLink;
-  this.pcType = candidate.pcType;
-  this.deleteAtt= candidate.deleteAtt;
+const Candidate = (candidates) => {
+  this.idCandidate = candidates.idCandidate;
+  this.fullName = candidates.fullName;
+  this.tel = candidates.tel;
+  this.emailCandidate = candidates.emailCandidate;
+  this.idDG = candidates.idDG;
+  this.interviewTime = candidates.interviewTime;
+  this.interviewDate = candidates.interviewDate;
+  this.status = candidates.status;
+  this.remark = candidates.remark;
+  this.idMentor = candidates.idMentor;
+  this.technicalComments = candidates.technicalComments;
+  this.technicalScore = candidates.technicalScore;
+  this.attitude = candidates.attitude;
+  this.englishCommunication = candidates.englishCommunication;
+  this.comments = candidates.comments;
+  this.remarks = candidates.remarks;
+  this.internshipDomain = candidates.internshipDomain;
+  this.preferredSkills = candidates.preferredSkills;
+  this.university = candidates.university;
+  this.faculty = candidates.faculty;
+  this.currentYearofStudy = candidates.currentYearOfStudy;
+  this.studentID = candidates.studentID;
+  this.preferredInternshipStartDate = candidates.preferredInternshipStartDate;
+  this.preferredInternshipDuration = candidates.preferredInternshipDuration;
+  this.internshipSchedule = candidates.internshipSchedule;
+  this.GPA = candidates.GPA;
+  this.idInternshipCourse = candidates.idInternshipCourse;
+  this.graduationYear = candidates.graduationYear;
+  this.projectExperience = candidates.projectExperience;
+  this.expectedGraduationSchedule = candidates.expectedGraduationSchedule;
+  this.remainingSubjects = candidates.remainingSubjects;
+  this.covidVaccinationiInformation = candidates.covidVaccinationiInformation;
+  this.certificationDate = candidates.certificationDate;
+  this.covidVaccinationCertificate = candidates.covidVaccinationCertificate;
+  this.interviewLink = candidates.interviewLink;
+  this.interviewer = candidates.interviewer;
+  this.pcType = candidates.pcType;
+  this.deleteAt = candidates.deleteAt;
 };
 Candidate.getAll = async (condition, columns, page, limit) => {
   try {
@@ -51,7 +52,7 @@ Candidate.getAll = async (condition, columns, page, limit) => {
     }
     const where = buildWhere(condition);
     let listColumn = `*`;
-    const strSql = `SELECT ${listColumn} FROM candidate LIMIT ${limit} OFFSET ${offset}`;
+    const strSql = `SELECT ${listColumn} FROM candidates LIMIT ${limit} OFFSET ${offset}`;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -69,18 +70,30 @@ Candidate.getBatch = async (condition, columns, page, limit) => {
       offset = (page - 1) * limit;
     }
     const where = buildWhere(condition);
-    let listColumn = `candidate.idCandidate,
-        candidate.fullName,
-        candidate.emailCandidate, 
-        mentor.fullNameMentor,
-        dg.nameDG,
-        candidate.internshipDomain,
+    let listColumn = `candidates.idCandidate,
+        candidates.fullName,
+        candidates.emailCandidate, 
+        candidates.studentID,
+        candidates.university,
+        candidates.internshipDomain,
         internshipcourse.nameCoure,
-        candidate.status`;
-    const strSql = `SELECT ${listColumn} FROM candidate INNER JOIN dg INNER JOIN mentor INNER JOIN internshipcourse 
-        WHERE candidate.idDG = dg.idDG and candidate.idMentor = mentor.idMentor AND candidate.idInternshipCourse = internshipcourse.idInternshipCourse AND ${where} LIMIT ${limit} OFFSET ${offset}`;
+        candidates.status`;
+    const strSql = `SELECT ${listColumn} FROM candidates INNER JOIN internshipcourse 
+        WHERE  
+     candidates.idInternshipCourse = internshipcourse.idInternshipCourse AND ${where} LIMIT ${limit} OFFSET ${offset}`;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+Candidate.create = async (condition) => {
+  try {
+    const sql = `INSERT INTO candidates SET ?`;
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(sql, condition);
+    return result.affectedRows !== 0;
   } catch (err) {
     console.log(err);
   }
@@ -89,7 +102,7 @@ Candidate.getBatch = async (condition, columns, page, limit) => {
 Candidate.update = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const sql = `UPDATE candidate SET ? WHERE ${where}`;
+    const sql = `UPDATE candidates SET ? WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
     return result.affectedRows !== 0;
@@ -100,7 +113,7 @@ Candidate.update = async (condition) => {
 Candidate.remove = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const sql = `DELETE FROM candidate WHERE ${where}`;
+    const sql = `DELETE FROM candidates  WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql);
     return result.affectedRows !== 0;
@@ -110,10 +123,11 @@ Candidate.remove = async (condition) => {
   }
 };
 
+
 Candidate.getTotalCount = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const sql = `SELECT count(*) as totalCount FROM candidate WHERE ${where}`;
+    const sql = `SELECT count(*) as totalCount FROM candidates WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql);
     return result[0].totalCount;
@@ -128,7 +142,7 @@ const buildWhere = (condition) => {
 
   if (condition.internshipcourseId) {
     strWhere +=
-      " AND candidate.idInternshipCourse =" + condition.internshipcourseId;
+      " AND candidates.idInternshipCourse =" + condition.internshipcourseId;
   }
   if (condition.candidateId) {
     strWhere += " AND idCandidate = " + condition.candidateId;
