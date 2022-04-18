@@ -136,7 +136,19 @@ Candidate.getTotalCount = async (condition) => {
     throw err;
   }
 };
-
+//test
+Candidate.updateInterview = async (condition) => {
+  try {
+    const where = buildWhere(condition);
+    const sql = `UPDATE candidates SET ? WHERE ${where}`;
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(sql, condition);
+    return result.affectedRows !== 0;
+  } catch (err) {
+    console.log(err);
+  }
+};
+//test
 const buildWhere = (condition) => {
   let strWhere = "1=1";
 

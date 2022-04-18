@@ -1,18 +1,28 @@
 const candidates = require("../models/candidate");
 const statusCodes = require("http-status-codes");
 
+
 const getCandidate = async (req, res) => {
   let page = 1,
     limit = 20;
   if (req.query.page && parseInt(req.query.page) > 0) {
     page = parseInt(req.query.page);
   }
+  let fullName="";
   const id = req.params.id;
-  const results = await candidates.getAll({}, [], page, limit);
-  const total = await candidates.getTotalCount({}, [], page, limit);
+  const results = await candidates.getAll({fullName: fullName}, [], page, limit);
+  const total = await candidates.getTotalCount({fullName: fullName});
 
-  return res.send({ data: results, total: total });
-};
+  if(results[0] === undefined){
+    return res
+    .status(statusCodes.BAD_REQUEST)
+    .json({ error: "Không có kết quả cho từ khóa này !"});
+  }
+  return res.status(statusCodes.OK).json({
+    data: results,
+    total: total,
+});
+}
 
 const getBatch = async (req, res) => {
   let page = 1,
@@ -23,18 +33,8 @@ const getBatch = async (req, res) => {
   }
 
   const id = req.params.id;
-  const results = await candidates.getBatch(
-    { internshipcourseId: id },
-    [],
-    page,
-    limit
-  );
-  const total = await candidates.getTotalCount(
-    { internshipcourseId: id },
-    [],
-    page,
-    limit
-  );
+  const results = await candidates.getBatch({ internshipcourseId: id },[],page,limit);
+  const total = await candidates.getTotalCount({ internshipcourseId: id },[],page,limit);
   return res.send({
     data: results,
     total: total,
@@ -44,7 +44,6 @@ const create = async (req, res) => {
   const emailRegex =/^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
   const scoreRegex = /([0-9]+)/;[0-9]; 
-
   const id = req.params.id;
   const {
     fullName,
@@ -133,7 +132,7 @@ const create = async (req, res) => {
       error: `Khoa có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !`,
     });
   }
-  if (currentYearofStudy !== "Năm 3" && currentYearofStudy !== "Năm 4") {
+  if (currentYearofStudy === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: `Vui lòng điền bạn thuộc sinh viên năm nào ? `,
     });
@@ -155,7 +154,7 @@ const create = async (req, res) => {
   }
   if (internshipSchedule === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập đầy đủ thông tin !`,
+      error: `Vui lòng nhập đầy đủ thông tin kỳ thực tập!`,
     });
   }
   if (!scoreRegex.test(GPA) ) {
@@ -261,7 +260,7 @@ const create = async (req, res) => {
 
   return res.status(statusCodes.OK).json({
     status: result,
-    error: result ? "Create successfully" : "Candidate not exits !!!",
+    error: result ? "Thêm ứng viên thành công" : "Ứng viên không tồn tại !",
   });
 };
 
@@ -270,12 +269,13 @@ const remove = async (req, res) => {
   const result = await candidates.remove({ candidateId: id });
   return res.status(statusCodes.OK).json({
     status: result,
-    error: result ? "Success" : "Candidate not exists",
+    error: result ? "Xóa thành công" : "Ứng viên không tồn tại",
   });
 };
 const update = async (req, res) => {
-  const emailRegex =
-    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+  const emailRegex =/^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+  const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+  const scoreRegex = /([0-9]+)/;[0-9]; 
   const id = req.params.id;
   const {
     fullName,
@@ -364,7 +364,7 @@ const update = async (req, res) => {
       error: `Vui lòng nhập đầy đủ Họ tên!`,
     });
   }
-  if (tel.length !== 10) {
+  if (!sdtRegex.test(tel)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: `Vui lòng nhập lại Số điện thoại!`,
     });
@@ -380,9 +380,18 @@ const update = async (req, res) => {
     });
   }
 
-  if (interviewDate < "2020/01/01") {
+  const dateNow = new Date();
+  const dateRequest = new Date(
+    interviewDate.slice(0, 4) +
+      "/" +
+      interviewDate.slice(5, 7) +
+      "/" +
+      interviewDate.slice(8, 10) +
+      ","
+  );
+  if (dateRequest.getTime() < dateNow.getTime()) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Ngày phỏng vấn không hợp lệ phải lớn hơn 01/01/2020 !",
+      error: `Không được nhỏ hơn ngày hiện tại`,
     });
   }
 
@@ -452,9 +461,9 @@ const update = async (req, res) => {
       error: `Khoa có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !`,
     });
   }
-  if (currentYearofStudy !== "3rd year" && currentYearofStudy !== "4th year") {
+  if (currentYearofStudy === "" ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng điền bạn là sinh viên 3rd year hoặc 4th year`,
+      error: `Vui lòng không được để trống năm học hiện tại của sinh viên`,
     });
   }
   if (studentID.length < 5 || studentID.length > 255) {
@@ -480,7 +489,7 @@ const update = async (req, res) => {
       error: `Bạn cần nhập thông tin chính xác Lịch thực tập`,
     });
   }
-  if (GPA.length !== 3 && GPA.length !== 4 && GPA.length !== 1) {
+  if (!scoreRegex.test(GPA)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: `Vui lòng nhập đúng điểm trung bình !!!`,
     });
@@ -534,7 +543,7 @@ const update = async (req, res) => {
       error: `Giấy chứng nhận tiêm chủng Covid có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự `,
     });
   }
-  if (interviewLink==="") {
+  if (interviewLink ==="") {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: `Liên kết phỏng vấn có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự`,
     });
@@ -597,7 +606,81 @@ const update = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     data: result,
-    message: result ? "Update successfully" : "Candidate not exits !!!",
+    message: result ? "Cập nhật thành công !" : "Ứng viên không tồn tại !!!",
+  });
+};
+
+const updateInterview = async (req, res) => {
+  const id = req.params.id;
+  const {
+    emailInterviewer,
+    interviewLink,
+    interviewDate,
+    interviewTime,
+    interviewer,
+  } = req.body;
+  if (
+    !emailInterviewer ||
+    !interviewLink ||
+    !interviewDate ||
+    !interviewTime ||
+    !interviewer
+  ) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: "Bạn cần nhập đủ thông tin" });
+  }
+
+  const emailRegex =
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+
+  if (!emailRegex.test(emailInterviewer)) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: "Email không hợp lệ",
+    });
+  }
+
+  const dateNow = new Date();
+  const dateRequest = new Date(
+    interviewDate.slice(0, 4) +
+      "/" +
+      interviewDate.slice(5, 7) +
+      "/" +
+      interviewDate.slice(8, 10) +
+      "," +
+      interviewTime.slice(0, 2) +
+      ":" +
+      interviewTime.slice(3, 5)
+  );
+
+  if (dateRequest.getTime() < dateNow.getTime()) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: `Ngày phỏng vấn nhỏ hơn ngày hiện tại`,
+    });
+  }
+  if (interviewLink.length < 5 || interviewLink.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: `Chiều dài link phỏng vấn không đủ`,
+    });
+  }
+  if (interviewer.length < 2 || interviewer.length > 255) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: `Chiều dài tên người phỏng vấn không đủ`,
+    });
+  }
+
+  const result = await candidates.updateInterview({
+    emailInterviewer: emailInterviewer,
+    interviewLink: interviewLink,
+    interviewDate: interviewDate,
+    interviewTime: interviewTime,
+    interviewer: interviewer,
+    idCandidate: id,
+  });
+
+  return res.status(statusCodes.OK).json({
+    data: result,
+    message: result ? "Update successfully" : "Update fail !!!",
   });
 };
 
@@ -607,4 +690,5 @@ module.exports = {
   getBatch,
   remove,
   update,
+  updateInterview
 };
