@@ -1,7 +1,7 @@
 const db = require("../models/index");
 const statusCodes = require("http-status-codes");
 const Candidate = db.candidates;
-
+const messageModels = require("../models/messgeModel");
 const readXlsxFile = require("read-excel-file/node");
 const { sequelize } = require("../models/index");
 
@@ -16,9 +16,10 @@ const checkDuplicateData = async (condition) => {
 
 const upload = async (req, res) => {
   if (req.file == undefined) {
-    return res
-      .status(statusCodes.BAD_REQUEST)
-      .send("Vui lòng tải lên một tệp excel !");
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).send({
+      message: messageModels.ERROR_UPLOAD,
+      error: error.message,
+    });
   }
   let path = "./resource/" + req.file.filename;
   const t = await sequelize.transaction();
@@ -75,7 +76,7 @@ const upload = async (req, res) => {
         };
         const isDuplicate = await checkDuplicateData(condition);
         if (isDuplicate) {
-          await await Candidate.update(candidate, {
+          await Candidate.update(candidate, {
             where: condition,
             transaction: t,
           });
@@ -90,12 +91,12 @@ const upload = async (req, res) => {
     } catch (error) {
       await t.rollback();
       return res.status(statusCodes.INTERNAL_SERVER_ERROR).send({
-        message: "Không thể nhập dữ liệu vào cơ sở dữ liệu !",
+        message: messageModels.INTERNAL_SERVER_ERROR,
         error: error.message,
       });
     }
     return res.status(statusCodes.OK).send({
-      message: "Import thành công file: " + req.file.originalname,
+      message: messageModels.OK + req.file.originalname,
       countNumerUpdate: countNumerUpdate,
       countNumerInsert: countNumerInsert,
     });
@@ -109,8 +110,7 @@ const getCandidates = (req, res) => {
     })
     .catch((err) => {
       return res.status(statusCodes.INTERNAL_SERVER_ERROR).send({
-        message:
-          err.message || "Đã xảy ra một số lỗi khi truy xuất các ứng cử viên .",
+        message: err.message || messageModels.ERROR_SERVER,
       });
     });
 };

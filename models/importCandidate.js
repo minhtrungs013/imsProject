@@ -2,7 +2,7 @@ module.exports = (sequelize, Sequelize) => {
   const Candidate = sequelize.define("candidates", {
     idCandidate: {
       type: Sequelize.INTEGER,
-      length: 15,
+      enum: 15,
       primaryKey: true,
       autoIncrement: true,
     },
@@ -12,11 +12,11 @@ module.exports = (sequelize, Sequelize) => {
         len: [5, 255],
       },
     },
-    tel: { type: "string", length: 10 },
+    tel: { type: "string", validate: { len: [0 - 10], isNumeric: true } },
     emailCandidate: { type: "string", validate: { isEmail: true } },
     idDG: {
       type: Sequelize.INTEGER,
-      length: 15,
+      enum: 15,
       foreignKey: {
         name: "pk_candidate_dg",
         table: "dg",
@@ -35,7 +35,7 @@ module.exports = (sequelize, Sequelize) => {
     remark: "string",
     idMentor: {
       type: Sequelize.INTEGER,
-      length: 15,
+      enum: 15,
       foreignKey: {
         name: "pk_candidate_mentor",
         table: "mentor",
@@ -75,7 +75,7 @@ module.exports = (sequelize, Sequelize) => {
     comments: {
       type: "string",
       validate: {
-        len: [5, 255],
+        len: [2, 255],
       },
     },
     remarks: {
@@ -118,10 +118,10 @@ module.exports = (sequelize, Sequelize) => {
     preferredInternshipStartDate: { type: "date" },
     preferredInternshipDuration: { type: "string" },
     internshipSchedule: { type: "string" },
-    GPA: { type: "float", length: 15 },
+    GPA: { type: "float", enum: 15 },
     idInternshipCourse: {
       type: Sequelize.INTEGER,
-      length: 15,
+      enum: 15,
       foreignKey: {
         name: "pk_candidate_internshipcouse",
         table: "internshipcourse",

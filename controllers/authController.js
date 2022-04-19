@@ -22,7 +22,9 @@ const login = (req, res) => {
       return res.status(statusCodes.OK).json({ accessToken });
     }
   }
-  return res.status(statusCodes.BAD_REQUEST).json({ error: "Incorrect userName or password" });
+  return res
+    .status(statusCodes.BAD_REQUEST)
+    .json({ error: "Incorrect userName or password" });
 };
 
 const profile = (req, res) => {
