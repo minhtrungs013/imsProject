@@ -1,10 +1,9 @@
 const dgModel = require("../models/dg");
 const statusCodes = require("http-status-codes");
 
-const getList = (req, res) => {
-  dgModel.getList((response) => {
-    return res.status(statusCodes.OK).json(response);
-  });
+const getList = async (req, res) => {
+  const result = await dgModel.getList({});
+  return res.status(statusCodes.OK).json({ data: result });
 };
 
 const create = async (req, res) => {
@@ -12,12 +11,21 @@ const create = async (req, res) => {
   if (!nameDG) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ message: "Please enter information" });
+      .json({ error: "Bạn cần nhập đủ thông tin" });
   }
   if (nameDG.length < 3 || nameDG.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: `The maximum length is 255, the minimum length is 5 characters !!!`,
+      error: `Chiều dài tên DG không đủ`,
     });
+  }
+
+  const dg = await dgModel.getList({
+    nameDgs: nameDG,
+  });
+  if (dg.length) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: `Tên DG đã tồn tại` });
   }
 
   const results = await dgModel.create({
@@ -25,7 +33,7 @@ const create = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     status: results,
-    message: results ? "Create successfully" : "DG exits!!!",
+    error: results ? "Thêm thành công" : "DG đã tồn tại",
   });
 };
 
@@ -35,11 +43,11 @@ const update = async (req, res) => {
   if (!nameDG) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ message: "Please enter information" });
+      .json({ error: "Bạn cần nhập đầy đủ thông tin" });
   }
   if (nameDG.length < 3 || nameDG.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      message: `The maximum length is 255, the minimum length is 5 characters !!!`,
+      error: `Chiều dài tên DG không đủ`,
     });
   }
 
@@ -49,7 +57,7 @@ const update = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     data: result,
-    message: result ? "Update successfully" : "Update faile !!!",
+    error: result ? "Cập nhật DG thành công" : "Cập nhật DG thất bại",
   });
 };
 
@@ -58,7 +66,7 @@ const remove = async (req, res) => {
   const result = await dgModel.remove({ idDG: id });
   return res.status(statusCodes.OK).json({
     status: result,
-    message: result ? "Delete successfully !!!" : "DG not exists",
+    error: result ? "Xóa DG thành công" : "DG không tồn tại",
   });
 };
 

@@ -8,13 +8,12 @@ const Dg = (dg) => {
 
 Dg.getList = async (condition) => {
   try {
-    const listColumn = "nameDG";
+    const listColumn = "*";
     const strSql = `SELECT ${listColumn} FROM dg `;
     const query = util.promisify(connect.query).bind(connect);
-    const result = await query(strSql);
-    return condition(result);
+    return await query(strSql);
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
   }
 };
 
@@ -49,7 +48,7 @@ Dg.remove = async (condition) => {
     const result = await query(sql);
     return result.affectedRows !== 0;
   } catch (err) {
-    console.log(err.message);
+    console.log(err);
     throw err;
   }
 };
