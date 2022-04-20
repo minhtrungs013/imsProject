@@ -14,37 +14,38 @@ const details = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const { nameCoure, dateStart, dateEnd, status, kindOfInternship } = req.body;
-  if (!nameCoure || !dateStart || !dateEnd || !status || !kindOfInternship) {
+  const { nameCoure, dateStart, dateEnd,status, kindOfInternship } = req.body;
+  if (!nameCoure || !dateStart || !dateEnd || !kindOfInternship) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Bạn cần điền đầy đủ thông tin" });
+      .json({ error:  courseModel.ERROR_EMPTY});
   }
   if (nameCoure.length > 255 || nameCoure.length < 6) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Tên khóa thực tập phải từ 6-255 kí tự" });
+      .json({ error: courseModel.ERROR_LENGTH_NAMECOURE });
   }
   if (dateStart >= dateEnd) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Ngày bắt đầu phải sớm hơn ngày kết thúc" });
-  }
-  if (
-    status !== courseModel.STATUS_DONE &&
-    status !== courseModel.STATUS_IN_PROGRESS
-  ) {
-    return res
-      .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Trang thái thực tập phải là Done hoặc In progress" });
-  }
+      .json({ error:  courseModel.ERROR_DATE});
+  } 
   if (
     kindOfInternship !== courseModel.KOD_FULL_TIME &&
     kindOfInternship !== courseModel.KOD_PARTIAL_TIME
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Loại thực tập phải là Fulltime hoặc Parttime" });
+      .json({ error: courseModel.ERROR_KINGOFINTERN });
+  }
+  if (
+    status !== courseModel.STATUS_DONE &&
+    status !== courseModel.STATUS_NAN &&
+    status !== courseModel.STATUS_IN_PROGRESS
+  ) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: courseModel.ERROR_STATUS });
   }
   const course = await courseModel.getList({
     nameCoures: nameCoure,
@@ -52,7 +53,7 @@ const create = async (req, res) => {
   if (course.length) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: `Tên ${nameCoure} đã tồn tại` });
+      .json({ error: courseModel.ERROR_BATCH });
   }
   const result = await courseModel.create({
     nameCoure: nameCoure,
@@ -64,7 +65,7 @@ const create = async (req, res) => {
   if (!result) {
     return res
       .status(statusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: `Hệ thống lỗi liên hệ quản trị viên` });
+      .json({ error:  courseModel.ERROR_SERVER});
   }
   return res.status(statusCodes.OK).json({
     status: result,
@@ -75,37 +76,38 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const idInternshipCourse = req.params.id;
-  const getCourse = await courseModel.getList({
+  const courseId = await courseModel.getList({
     idInternshipCourse: idInternshipCourse,
   });
-  if (!getCourse.length) {
+  if (!courseId.length) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Khóa thực tập không tồn tại trong hệ thống !" });
+      .json({ error:    courseModel.ERROR_COURSEID});
   }
-  const {nameCoure, dateStart, dateEnd, status, kindOfInternship} = req.query;
+  const {nameCoure, dateStart, dateEnd, status, kindOfInternship} = req.body;
   if (!nameCoure || !dateStart || !dateEnd || !status || !kindOfInternship) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Bạn cần điền đầy đủ thông tin" });
+      .json({ error: courseModel.ERROR_EMPTY });
   }
   if (nameCoure.length > 255 || nameCoure.length < 6) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Tên khóa thực tập phải từ 6-255 kí tự" });
+      .json({ error: courseModel.ERROR_LENGTH_NAMECOURE});
   }
   if (dateStart >= dateEnd) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Ngày bắt đầu phải sớm hơn ngày kết thúc" });
+      .json({ error: courseModel.ERROR_DATE });
   }
   if (
     status !== courseModel.STATUS_DONE &&
+    status !== courseModel.STATUS_NAN &&
     status !== courseModel.STATUS_IN_PROGRESS
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Trang thái thực tập phải là Done hoặc In progress" });
+      .json({ error: courseModel.ERROR_STATUS });
   }
   if (
     kindOfInternship !== courseModel.KOD_FULL_TIME &&
@@ -113,15 +115,7 @@ const update = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Loại thực tập phải là Fulltime hoặc Parttime" });
-  }
-  const course = await courseModel.getList({
-    nameCoures: nameCoure,
-  });
-  if (course.length) {
-    return res
-      .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Tên Batch đã tồn tại" });
+      .json({ error: courseModel.ERROR_KINGOFINTERN });
   }
   const result = await courseModel.update({
     idInternshipCourse: idInternshipCourse,
@@ -133,24 +127,24 @@ const update = async (req, res) => {
   })
   return res.status(statusCodes.OK).json({
     status: result,
-    message: "Cập nhật thành công",
+    message: courseModel.SUCCESS_UPDATE,
   });
 };
 
 const del = async (req, res) => {
   const idInternshipCourse = req.params.id;
-  const getCourse = await courseModel.getList({
+  const courseId = await courseModel.getList({
     idInternshipCourse: idInternshipCourse,
   });
-  if (!getCourse.length) {
+  if (!courseId.length) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: `Khóa thực tập này không tồn tại trong hệ thống !` });
+      .json({ error: courseModel.ERROR_COURSEID });
   }
   const result = await courseModel.delete({ idInternshipCourse: idInternshipCourse });
   return res.status(statusCodes.OK).json({
     status: result,
-    message: "Xóa thành công",
+    message: courseModel.SUCCESS_DEL,
   });
 };
 

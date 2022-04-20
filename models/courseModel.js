@@ -87,7 +87,16 @@ const buildWhere = (condition) => {
 
 Internshipcourse.STATUS_DONE = "Done";
 Internshipcourse.STATUS_IN_PROGRESS = "In progress";
-Internshipcourse.KOD_FULL_TIME = "Full time";
-Internshipcourse.KOD_PARTIAL_TIME = "Part time";
+Internshipcourse.STATUS_NAN = "N/A";
+Internshipcourse.ERROR_EMPTY = "Bạn cần điền đầy đủ thông tin";
+Internshipcourse.ERROR_BATCH = "Tên Batch đã tồn tại";
+Internshipcourse.ERROR_LENGTH_NAMECOURE = "Tên khóa thực tập phải từ 6-255 kí tự";
+Internshipcourse.ERROR_DATE = "Ngày bắt đầu phải sớm hơn ngày kết thúc";
+Internshipcourse.ERROR_KINGOFINTERN = "Loại thực tập phải là Fulltime hoặc Parttime";
+Internshipcourse.ERROR_STATUS = "Trang thái thực tập phải là Done hoặc In progress và N/A";
+Internshipcourse.ERROR_SERVER = "Hệ thống lỗi liên hệ quản trị viên";
+Internshipcourse.ERROR_COURSEID = "Khóa thực tập không tồn tại trong hệ thống !";
+Internshipcourse.SUCCESS_UPDATE = "Cập nhật thành công";
+Internshipcourse.SUCCESS_DEL = "Xóa thành công";
 
 module.exports = Internshipcourse;
