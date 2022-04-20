@@ -44,19 +44,7 @@ const Candidate = (candidate) => {
 };
 Candidate.getInterview = async (condition, columns, page, limit) => {
   try {
-    let listColumn = `candidates.idCandidate,
-      candidates.fullName,
-      candidates.emailCandidate,
-      candidates.interviewDate,
-      candidates.interviewTime,
-      candidates.interviewer,
-      candidates.interviewLink,
-      candidates.comments,
-      candidates.technicalComments,
-      candidates.technicalScore,
-      candidates.attitude,
-      candidates.englishCommunication,
-      candidates.status`;
+    let listColumn = `*`;
     if (columns && columns.length > 0) {
       listColumn = columns.join();
     }
@@ -65,7 +53,7 @@ Candidate.getInterview = async (condition, columns, page, limit) => {
       offset = (page - 1) * limit;
     }
     const where = buildWhere(condition);
-    const whereColumn = `interviewDate != ''`
+    const whereColumn = `interviewer != ''`;
     const strSql = `SELECT ${listColumn} FROM ${Table} WHERE ${whereColumn} AND ${where} LIMIT ${limit} OFFSET ${offset} `;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
@@ -76,7 +64,7 @@ Candidate.getInterview = async (condition, columns, page, limit) => {
 Candidate.getTotalCount = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const whereColumn = `interviewDate != ''`
+    const whereColumn = `interviewer != ''`;
     const strSql = `SELECT count(*) as totalCount FROM ${Table} WHERE ${whereColumn} AND ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(strSql);
@@ -89,8 +77,8 @@ Candidate.getTotalCount = async (condition) => {
 
 Candidate.delete = async (condition) => {
   try {
-    const valueNull = 'null'
-    const setColum = `interviewDate = ${valueNull}, interviewTime = ${valueNull}, interviewer = ${valueNull}, interviewLink = ${valueNull}, emailInterviewer = ${valueNull}`
+    const valueNull = "null";
+    const setColum = `interviewDate = ${valueNull}, interviewTime = ${valueNull}, interviewer = ${valueNull}, interviewLink = ${valueNull}, emailInterviewer = ${valueNull}`;
     const where = buildWhere(condition);
     const sql = `UPDATE ${Table} SET ${setColum} WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
@@ -102,6 +90,19 @@ Candidate.delete = async (condition) => {
   }
 };
 
+Candidate.update = async (condition) => {
+  try {
+    const where = buildWhere(condition);
+    const sql = `UPDATE ${Table} SET ? WHERE ${where}`;
+    console.log(sql);
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(sql, condition);
+    return result.affectedRows !== 0;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const buildWhere = (condition) => {
   let strWhere = "1=1";
   if (condition.idCandidate) {
@@ -110,7 +111,13 @@ const buildWhere = (condition) => {
   if (condition.fullName) {
     strWhere += ' AND fullName LIKE "%' + condition.fullName + '%" ';
   }
+  if (condition.statusPr) {
+    strWhere += ' AND status = "' + condition.statusPr + '" ';
+  }
   return strWhere;
 };
-const Table = "candidates"
+const Table = "candidates";
+Candidate.ERROR_SEARCH = "Không có kết quả cho từ khóa này !";
+Candidate.ERROR_ID = "Internview không tồn tại trong hệ thống !";
+
 module.exports = Candidate;
