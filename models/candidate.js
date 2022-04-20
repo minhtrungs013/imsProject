@@ -94,7 +94,6 @@ Candidate.update = async (condition) => {
   try {
     const where = buildWhere(condition);
     const sql = `UPDATE ${Table} SET ? WHERE ${where}`;
-    console.log(sql);
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
     return result.affectedRows !== 0;

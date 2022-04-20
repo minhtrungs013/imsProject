@@ -39,7 +39,6 @@ const updateInternviewResult = async (req, res) => {
   const idCandidate = req.params.id;
   const updateInsert = "success";
   const { status, idMentor, idDG, comments } = req.body;
-  console.log(status, idMentor, idDG, comments);
   const course = await candidateModel.getInterview(
     { idCandidate: idCandidate },
     [],
