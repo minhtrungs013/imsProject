@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const { requireToken } = require("./middleware/index");
 const cors = require("cors");
+
 const authRoute = require("./routers/auth");
 const mentor = require("./routers/mentor");
 
@@ -15,7 +16,7 @@ app.use(express.json());
 
 // register route
 app.use(authRoute);
-app.use(requireToken, mentor);
+app.use(mentor);
 
 app.listen(port, () => {
   console.log("App start success");
