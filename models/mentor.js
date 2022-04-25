@@ -152,6 +152,6 @@ Mentor.ERROR_CREATE = "idDG hoặc idInternshipCourse không tồn tại !!!";
 Mentor.ERROR_UPDATE = "ID Mentor không tồn tại";
 Mentor.ERROR_DATENOW = "Ngày sinh không được lớn hơn ngày hiện tại !!!";
 Mentor.MESSAGE_DELETE = "Xóa thành công !!!";
-Mentor.ERROR_DELETE = " ID Mentor không tồn tại";
+Mentor.ERROR_DELETE = " ID người hướng dẫn không tồn tại";
 Mentor.ERROR_EMAIL_DUPLICATE = "Email người hướng dẫn đã tồn tại";
 module.exports = Mentor;
