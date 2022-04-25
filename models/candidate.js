@@ -78,7 +78,7 @@ Candidate.getTotalCount = async (condition) => {
 Candidate.delete = async (condition) => {
   try {
     const valueNull = "null";
-    const setColum = `interviewDate = ${valueNull}, interviewTime = ${valueNull}, interviewer = ${valueNull}, interviewLink = ${valueNull}, emailInterviewer = ${valueNull}`;
+    const setColum = `interviewDate = ${valueNull}, interviewTime = ${valueNull}, interviewer = ${valueNull}, interviewLink = ${valueNull}, emailInterviewer = ${valueNull}, updateInsert = ${valueNull}`;
     const where = buildWhere(condition);
     const sql = `UPDATE ${Table} SET ${setColum} WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
@@ -113,10 +113,22 @@ const buildWhere = (condition) => {
   if (condition.statusPr) {
     strWhere += ' AND status = "' + condition.statusPr + '" ';
   }
+  if (condition.updateInserts) {
+    strWhere += ' AND updateInsert = "' + condition.updateInserts + '" ';
+  }
+  if (condition.idInternshipCourse ) {
+    strWhere += " AND idInternshipCourse  = " + condition.idInternshipCourse ;
+  }
   return strWhere;
 };
 const Table = "candidates";
+Candidate.STATUS_PASS = "Pass";
+Candidate.STATUS_FAIL = "Fail";
+Candidate.ERROR_EMPTY = "Bạn cần điền đầy đủ thông tin";
 Candidate.ERROR_SEARCH = "Không có kết quả cho từ khóa này !";
 Candidate.ERROR_ID = "Internview không tồn tại trong hệ thống !";
+Candidate.ERROR_STATUS = "Kết quả phải là Pass hoặc Fail";
+Candidate.SUCCESS_DEL = "Xóa thành công";
+Candidate.SUCCESS_UPDATE = "Cập nhật thành công";
 
 module.exports = Candidate;

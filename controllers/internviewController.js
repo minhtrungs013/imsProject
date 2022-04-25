@@ -1,6 +1,7 @@
 const candidateModel = require("../models/candidate");
 const statusCodes = require("http-status-codes");
 const get = async (req, res) => {
+  const idInternshipCourse  = req.params.id;
   let page = 1,
     limit = 20;
   if (req.query.page && parseInt(req.query.page) > 0) {
@@ -14,8 +15,12 @@ const get = async (req, res) => {
   if (req.query.status) {
     status = req.query.status;
   }
+  let updateInsert = "";
+  if (req.query.status) {
+    updateInsert = req.query.updateInsert;
+  }
   const results = await candidateModel.getInterview(
-    { fullName: fullName, statusPr: status },
+    {idInternshipCourse :idInternshipCourse , fullName: fullName, statusPr: status,updateInserts: updateInsert },
     [],
     page,
     limit
@@ -23,6 +28,7 @@ const get = async (req, res) => {
   const total = await candidateModel.getTotalCount({
     fullName: fullName,
     statusPr: status,
+    updateInsert: updateInsert
   });
   if (results[0] === undefined) {
     return res
@@ -39,6 +45,14 @@ const updateInternviewResult = async (req, res) => {
   const idCandidate = req.params.id;
   const updateInsert = "success";
   const { status, idMentor, idDG, comments } = req.body;
+  if (
+    status !== candidateModel.STATUS_PASS &&
+    status !== candidateModel.STATUS_FAIL 
+  ){
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: candidateModel.ERROR_STATUS });
+  }
   const course = await candidateModel.getInterview(
     { idCandidate: idCandidate },
     [],
@@ -65,12 +79,14 @@ const updateInternviewResult = async (req, res) => {
 };
 const updateInsert = async (req, res) => {
   const updateInsert = "";
+  const idInternshipCourse = req.params.id;
   const results = await candidateModel.update({
     updateInsert: updateInsert,
+    idInternshipCourse: idInternshipCourse
   });
   return res.status(statusCodes.OK).json({
     status: results,
-    message: "cập nhật thành công",
+    message: candidateModel.SUCCESS_UPDATE,
   });
 };
 
@@ -97,7 +113,7 @@ const del = async (req, res) => {
   const result = await candidateModel.delete({ idCandidate: idCandidate });
   return res.status(statusCodes.OK).json({
     status: result,
-    message: "Xóa thành công",
+    message: candidateModel.SUCCESS_DEL,
   });
 };
 module.exports = {
