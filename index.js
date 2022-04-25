@@ -10,6 +10,7 @@ const authRoute = require("./routers/auth");
 const courseRoute = require("./routers/course");
 const mentor = require("./routers/mentor");
 const candidateRoute = require("./routers/candidate");
+const emailRoute = require("./routers/email");
 
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(authRoute);
 app.use(requireToken, courseRoute);
 app.use(requireToken, mentor);
 app.use(requireToken, candidateRoute);
+app.use(requireToken, emailRoute);
 
 app.listen(port, () => {
   console.log("App start success");
