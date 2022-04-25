@@ -129,56 +129,7 @@ Candidate.getTotalCount = async (condition) => {
     throw err;
   }
 };
-const date = new Date();
-const year = date.getFullYear();
-const month = date.getMonth() + 1;
-const day = date.getDate();
-const hour = date.getHours();
-const minute = date.getMinutes();
-const second = date.getSeconds();
-const dateDelete = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 
-Candidate.softDelete = async (condition) => {
-  try {
-    const where = buildWhere(condition);
-    const sql = `UPDATE candidates SET deleteAt = '${dateDelete}' WHERE ${where}`;
-    const query = util.promisify(connect.query).bind(connect);
-    const result = await query(sql, condition);
-    return result.affectedRows !== 0;
-  } catch (err) {
-    console.log(err);
-  }
-};
-Candidate.restore = async (condition) => {
-  try {
-    const where = buildWhere(condition);
-    const sql = `UPDATE candidates SET deleteAt = null WHERE ${where}`;
-    const query = util.promisify(connect.query).bind(connect);
-    const result = await query(sql, condition);
-    return result.affectedRows !== 0;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-Candidate.getBin = async (condition, columns, page, limit) => {
-  try {
-    if (columns && columns.length > 0) {
-      listColumn = columns.join();
-    }
-    let offset = 0;
-    if (page > 1) {
-      offset = (page - 1) * limit;
-    }
-    const where = buildWhere(condition);
-    let listColumn = "*";
-    const strSql = `SELECT ${listColumn} FROM candidates WHERE candidates.deleteAt IS NOT NULL LIMIT ${limit} OFFSET ${offset}`;
-    const query = util.promisify(connect.query).bind(connect);
-    return await query(strSql);
-  } catch (err) {
-    console.log(err);
-  }
-};
 const buildWhere = (condition) => {
   let strWhere = "1=1";
 
@@ -187,9 +138,6 @@ const buildWhere = (condition) => {
       " AND candidates.idInternshipCourse =" + condition.internshipcourseId;
   }
 
-  if (condition.candidateId) {
-    strWhere += " AND idCandidate = " + condition.candidateId;
-  }
   if (condition.idCandidate) {
     strWhere += " AND idCandidate = " + condition.idCandidate;
   }

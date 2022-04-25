@@ -290,7 +290,7 @@ const create = async (req, res) => {
 
 const remove = async (req, res) => {
   const id = req.params.id;
-  const result = await candidates.remove({ candidateId: id });
+  const result = await candidates.remove({ idCandidate: id });
   return res.status(statusCodes.OK).json({
     status: result,
     error: result ? candidates.Message_Done : candidates.Message_Error,
