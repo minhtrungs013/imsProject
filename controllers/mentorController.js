@@ -29,7 +29,7 @@ const remove = async (req, res) => {
   const result = await mentorModel.remove({ mentorId: id });
   return res.status(statusCodes.OK).json({
     status: result,
-    message: result ? "Xóa thành công !!!" : "Mentor không tồn tại",
+    Message: result ? mentorModel.MESSAGE_DELETE : mentorModel.ERROR_DELETE,
   });
 };
 
@@ -85,38 +85,80 @@ const create = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Vui lòng điền đẩy đủ thông tin !" });
+      .json({ error: mentorModel.ERROR_EMPTY });
   }
-  if (fullNameMentor.length < 5 || fullNameMentor.length > 255) {
+  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+  const checkForSpecialChar = function (string) {
+    for (i = 0; i < specialChars.length; i++) {
+      if (string.indexOf(specialChars[i]) > -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  if (checkForSpecialChar(fullNameMentor)) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: mentorModel.ERROR_SPECIAL_CHARACTERISTICS });
+  }
+
+  if (fullNameMentor.length < 2 || fullNameMentor.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
+      error: mentorModel.ERROR_LENGHT,
     });
   }
-  if (workplace.length < 5 || workplace.length > 255) {
+  if (workplace.length < 2 || workplace.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
+      error: mentorModel.ERROR_LENGHT,
     });
   }
 
-  if (address.length < 5 || address.length > 255) {
+  if (address.length < 2 || address.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
+      error: mentorModel.ERROR_LENGHT,
     });
   }
-  if (position.length < 5 || position.length > 255) {
+
+  if (position.length < 2 || position.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
+      error: mentorModel.ERROR_LENGHT,
     });
   }
   if (dayOfBirth < "1960/01/01") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: " Ngày sinh không hợp lệ phải lớn hơn 01/01/1960 !!!",
+      error: mentorModel.ERROR_DATE,
+    });
+  }
+  const dateNow = new Date();
+  const dateRequest = new Date(
+    dayOfBirth.slice(0, 4) +
+      "/" +
+      dayOfBirth.slice(5, 7) +
+      "/" +
+      dayOfBirth.slice(8, 10)
+  );
+  if (dateRequest.getTime() > dateNow.getTime()) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: mentorModel.ERROR_DATENOW,
     });
   }
 
   if (!emailRegex.test(email)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Email không hợp lệ !!!",
+      error: mentorModel.ERROR_EMAIL,
+    });
+  }
+
+  const countemail = await mentorModel.getdetailBatch(
+    { emailMentor: email, idInternshipCourse: idInternshipCourse },
+    [],
+    1,
+    1
+  );
+  if (countemail.length) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: mentorModel.ERROR_EMAIL_DUPLICATE,
     });
   }
 
@@ -132,9 +174,7 @@ const create = async (req, res) => {
   });
   return res.status(statusCodes.OK).json({
     status: results,
-    message: results
-      ? "Thêm Thành công !!!"
-      : "idDG hoặc idInternshipCourse không tồn tại !!!",
+    message: results ? mentorModel.MESSAGE_CREATE : mentorModel.ERROR_CREATE,
   });
 };
 
@@ -142,7 +182,7 @@ const update = async (req, res) => {
   const emailRegex =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
-  const id = req.params.id;
+  const idMentor = req.params.id;
   const {
     fullNameMentor: fullNameMentor,
     dayOfBirth: dayOfBirth,
@@ -151,7 +191,6 @@ const update = async (req, res) => {
     email: email,
     position: position,
     idDG: idDG,
-    idInternshipCourse: idInternshipCourse,
   } = req.body;
   if (
     !fullNameMentor ||
@@ -160,43 +199,71 @@ const update = async (req, res) => {
     !workplace ||
     !email ||
     !position ||
-    !idDG ||
-    !idInternshipCourse
+    !idDG
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Vui lòng điền đẩy đủ thông tin " });
+      .json({ error: mentorModel.ERROR_EMPTY });
   }
-  if (fullNameMentor.length < 5 || fullNameMentor.length > 255) {
+  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+  const checkForSpecialChar = function (string) {
+    for (i = 0; i < specialChars.length; i++) {
+      if (string.indexOf(specialChars[i]) > -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+  if (checkForSpecialChar(fullNameMentor)) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: mentorModel.ERROR_SPECIAL_CHARACTERISTICS });
+  }
+
+  if (fullNameMentor.length < 2 || fullNameMentor.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!`,
+      error: mentorModel.ERROR_LENGHT,
     });
   }
-  if (workplace.length < 5 || workplace.length > 255) {
+  if (workplace.length < 2 || workplace.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
+      error: mentorModel.ERROR_LENGHT,
     });
   }
 
-  if (address.length < 5 || address.length > 255) {
+  if (address.length < 2 || address.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
+      error: mentorModel.ERROR_LENGHT,
     });
   }
-  if (position.length < 5 || position.length > 255) {
+
+  if (position.length < 2 || position.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Độ dài tối đa là 255 ký tự,tối thiểu là 5 ký tự !!!",
+      error: mentorModel.ERROR_LENGHT,
     });
   }
   if (dayOfBirth < "1960/01/01") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Ngày sinh không hợp lệ phải lớn hơn 01/01/1960 !!!",
+      error: mentorModel.ERROR_DATE,
+    });
+  }
+  const dateNow = new Date();
+  const dateRequest = new Date(
+    dayOfBirth.slice(0, 4) +
+      "/" +
+      dayOfBirth.slice(5, 7) +
+      "/" +
+      dayOfBirth.slice(8, 10)
+  );
+  if (dateRequest.getTime() > dateNow.getTime()) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: mentorModel.ERROR_DATENOW,
     });
   }
 
   if (!emailRegex.test(email)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Email không hợp lệ !!!",
+      error: mentorModel.ERROR_EMAIL,
     });
   }
 
@@ -208,12 +275,11 @@ const update = async (req, res) => {
     email: email,
     position: position,
     idDG: idDG,
-    idInternshipCourse: idInternshipCourse,
-    idMentor: id,
+    idMentor: idMentor,
   });
   return res.status(statusCodes.OK).json({
     data: result,
-    message: result ? "Cập nhật thành công !!!" : "Mentor không tồn tại !!!",
+    message: result ? mentorModel.MESSAGE_UPDATE : mentorModel.ERROR_UPDATE,
   });
 };
 
