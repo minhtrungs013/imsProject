@@ -1,6 +1,6 @@
 const candidates = require("../models/candidate");
 const statusCodes = require("http-status-codes");
-
+const dateNow = new Date();
 
 const getCandidate = async (req, res) => {
   let page = 1,
@@ -8,21 +8,18 @@ const getCandidate = async (req, res) => {
   if (req.query.page && parseInt(req.query.page) > 0) {
     page = parseInt(req.query.page);
   }
-  let fullName="";
-  const id = req.params.id;
-  const results = await candidates.getAll({fullName: fullName}, [], page, limit);
-  const total = await candidates.getTotalCount({fullName: fullName});
 
-  if(results[0] === undefined){
-    return res
-    .status(statusCodes.BAD_REQUEST)
-    .json({ error: "Không có kết quả cho từ khóa này !"});
-  }
+  const id = req.params.id;
+  const results = await candidates.getByID(
+    { idCandidate: id },
+    [],
+    page,
+    limit
+  );
   return res.status(statusCodes.OK).json({
     data: results,
-    total: total,
-});
-}
+  });
+};
 
 const getBatch = async (req, res) => {
   let page = 1,
@@ -32,18 +29,35 @@ const getBatch = async (req, res) => {
     page = parseInt(req.query.page);
   }
 
+  let fullName = "";
+  if (req.query.fullName) {
+    fullName = req.query.fullName;
+  }
+
   const id = req.params.id;
-  const results = await candidates.getBatch({ internshipcourseId: id },[],page,limit);
-  const total = await candidates.getTotalCount({ internshipcourseId: id },[],page,limit);
+  const results = await candidates.getBatch(
+    { internshipcourseId: id, fullName: fullName },
+    [],
+    page,
+    limit
+  );
+  const total = await candidates.getTotalCount(
+    { internshipcourseId: id },
+    [],
+    page,
+    limit
+  );
   return res.send({
     data: results,
     total: total,
   });
 };
 const create = async (req, res) => {
-  const emailRegex =/^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+  const emailRegex =
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
-  const scoreRegex = /([0-9]+)/;[0-9]; 
+  const scoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
+
   const id = req.params.id;
   const {
     fullName,
@@ -95,130 +109,140 @@ const create = async (req, res) => {
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Vui lòng điền đầy đủ thông tin !" });
+      .json({ error: candidates.ErrorRequest });
   }
-  if (fullName.length < 5 || fullName.length > 255) {
+
+  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+  const checkForSpecialChar = function (string) {
+    for (i = 0; i < specialChars.length; i++) {
+      if (string.indexOf(specialChars[i]) > -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+  if (checkForSpecialChar(fullName)) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: candidates.ErrorNameSpecialChars });
+  }
+
+  if (fullName.length < 2 || fullName.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập đầy đủ Họ và tên !`,
+      error: candidates.ErrorNameLength,
     });
   }
   if (!sdtRegex.test(tel)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập đúng Số điện thoại ví dụ 0********** !`,
+      error: candidates.ErrorSDT,
     });
   }
   if (!emailRegex.test(emailCandidate)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Đây không phải là email Vui lòng nhập lại !",
+      error: candidates.ErrorEmail,
     });
   }
-  if (internshipDomain.length < 5 || internshipDomain.length > 255) {
+  if (internshipDomain.length < 2 || internshipDomain.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vị trí thực tập có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorInternshipDomain,
     });
   }
-  if (preferredSkills.length < 5 || preferredSkills.length > 255) {
+  if (preferredSkills.length < 2 || preferredSkills.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Kỹ năng ưa thích có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorPreferredSkill,
     });
   }
-  if (university.length < 5 || university.length > 255) {
+  if (university.length < 2 || university.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Trường đại học có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !`,
+      error: candidates.ErrorUniversity,
     });
   }
-  if (faculty.length < 5 || faculty.length > 255) {
+  if (faculty.length < 2 || faculty.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Khoa có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !`,
+      error: candidates.ErrorFaculty,
     });
   }
   if (currentYearofStudy === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng điền bạn thuộc sinh viên năm nào ? `,
+      error: candidates.ErrorCurrentYearofStudy,
     });
   }
-  if (studentID.length < 5 || studentID.length > 255) {
+  if (studentID.length < 2 || studentID.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài tối đa của mã sinh viên là 255, độ dài tối thiểu là 5 ký tự !`,
-    });
-  }
-  if (preferredInternshipStartDate < "2020/01/01") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Ngày bắt đầu thực tập phải lớn hơn !!!",
+      error: candidates.ErrorStudentID,
     });
   }
   if (preferredInternshipDuration === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập thời gian bạn muốn thực tập !`,
+      error: candidates.ErrorPreferredInternshipDuration,
     });
   }
   if (internshipSchedule === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập đầy đủ thông tin kỳ thực tập!`,
+      error: candidates.ErrorInternshipSchedule,
     });
   }
-  if (!scoreRegex.test(GPA) ) {
+  if (!scoreRegex.test(GPA)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập điểm trung bình tổng kết !`,
+      error: candidates.ErrorGPA,
     });
   }
   if (idInternshipCourse === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập đầy đủ thông tin ! `,
+      error: candidates.ErrorIdInternshipCourse,
     });
   }
   if (graduationYear === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng không để trống trường Năm học hiện tại`,
+      error: candidates.ErrorGraduationYear,
     });
   }
-  if (projectExperience.length < 5 || projectExperience.length > 255) {
+  if (projectExperience.length < 2 || projectExperience.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập các dự án đã tham gia nhưng không được quá 255 ký tự !`,
+      error: candidates.ErrorProjectExperience,
     });
   }
   if (
-    expectedGraduationSchedule.length < 5 ||
+    expectedGraduationSchedule.length < 2 ||
     expectedGraduationSchedule.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập dự kiến tốt nghiệp nhưng không được quá 255 ký tự !`,
+      error: candidates.ErrorExpectedGraduationSchedule,
     });
   }
-  if (remainingSubjects.length < 5 || remainingSubjects.length > 255) {
+  if (remainingSubjects.length < 2 || remainingSubjects.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập các môn học còn lại nhưng không được quá 255 ký tự !`,
+      error: candidates.ErrorRemainingSubjects,
     });
   }
   if (
-    covidVaccinationiInformation.length < 5 ||
+    covidVaccinationiInformation.length < 2 ||
     covidVaccinationiInformation.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng không nhập  thông tin tim chủng Covid quá 255 ký tự `,
+      error: candidates.ErrorCovidVaccinationiInformation,
     });
   }
   if (certificationDate === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự `,
+      error: candidates.ErrorCertificationDate,
     });
   }
   if (
-    covidVaccinationCertificate.length < 5 ||
+    covidVaccinationCertificate.length < 2 ||
     covidVaccinationCertificate.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự `,
+      error: candidates.ErrorCovidVaccinationCertificate,
     });
   }
 
   if (pcType === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng điền thông tin loại máy thực tập !"`,
+      error: candidates.ErrorPcType,
     });
   }
 
-  const dateNow = new Date();
   const dateRequest = new Date(
     preferredInternshipStartDate.slice(0, 4) +
       "/" +
@@ -229,7 +253,7 @@ const create = async (req, res) => {
   );
   if (dateRequest.getTime() < dateNow.getTime()) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Không được nhỏ hơn ngày hiện tại`,
+      error: candidates.ErrorPreferredInternshipStartDate,
     });
   }
 
@@ -260,7 +284,7 @@ const create = async (req, res) => {
 
   return res.status(statusCodes.OK).json({
     status: result,
-    error: result ? "Thêm ứng viên thành công" : "Ứng viên không tồn tại !",
+    error: result ? candidates.Message_Done : candidates.Message_Error,
   });
 };
 
@@ -269,21 +293,21 @@ const remove = async (req, res) => {
   const result = await candidates.remove({ candidateId: id });
   return res.status(statusCodes.OK).json({
     status: result,
-    error: result ? "Xóa thành công" : "Ứng viên không tồn tại",
+    error: result ? candidates.Message_Done : candidates.Message_Error,
   });
 };
 const update = async (req, res) => {
-  const emailRegex =/^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+  const emailRegex =
+    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
-  const scoreRegex = /([0-9]+)/;[0-9]; 
+  const scoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
+  [0 - 9];
   const id = req.params.id;
   const {
     fullName,
     tel,
     emailCandidate,
     idDG,
-    interviewTime,
-    interviewDate,
     status,
     remark,
     idMentor,
@@ -303,7 +327,6 @@ const update = async (req, res) => {
     preferredInternshipDuration,
     internshipSchedule,
     GPA,
-    idInternshipCourse,
     graduationYear,
     projectExperience,
     expectedGraduationSchedule,
@@ -311,9 +334,6 @@ const update = async (req, res) => {
     covidVaccinationiInformation,
     certificationDate,
     covidVaccinationCertificate,
-    interviewLink,
-    interviewer,
-    emailInterviewer,
     pcType,
   } = req.body;
   if (
@@ -321,8 +341,6 @@ const update = async (req, res) => {
     !tel ||
     !emailCandidate ||
     !idDG ||
-    !interviewTime ||
-    !interviewDate ||
     !status ||
     !remark ||
     !idMentor ||
@@ -342,7 +360,6 @@ const update = async (req, res) => {
     !preferredInternshipDuration ||
     !internshipSchedule ||
     !GPA ||
-    !idInternshipCourse ||
     !graduationYear ||
     !projectExperience ||
     !expectedGraduationSchedule ||
@@ -350,217 +367,189 @@ const update = async (req, res) => {
     !covidVaccinationiInformation ||
     !certificationDate ||
     !covidVaccinationCertificate ||
-    !interviewLink ||
-    !interviewer ||
-    !emailInterviewer ||
     !pcType
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Vui lòng điền đầy đủ thông tin!" });
+      .json({ error: candidates.ErrorRequest });
   }
-  if (fullName.length < 5 || fullName.length > 255) {
+  if (fullName.length < 2 || fullName.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập đầy đủ Họ tên!`,
+      error: candidates.ErrorFullName,
     });
   }
   if (!sdtRegex.test(tel)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập lại Số điện thoại!`,
+      error: candidates.ErrorSDT,
     });
   }
   if (!emailRegex.test(emailCandidate)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Đây không phải là địa chỉ Email!",
+      error: candidates.ErrorEmail,
     });
   }
   if (idDG === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Bạn cần nhập đúng thông tin Nhóm thực tập !`,
+      error: candidates.ErrorIdDG,
     });
   }
 
-  const dateNow = new Date();
-  const dateRequest = new Date(
-    interviewDate.slice(0, 4) +
-      "/" +
-      interviewDate.slice(5, 7) +
-      "/" +
-      interviewDate.slice(8, 10) +
-      ","
-  );
-  if (dateRequest.getTime() < dateNow.getTime()) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Không được nhỏ hơn ngày hiện tại`,
-    });
-  }
-
-  if (status !== "Pass" && status !== "Fail") {
+  if (status === "") {
     return res
       .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Vui lòng chọn Pass hoặc Fail" });
+      .json({ error: candidates.ErrorStatus });
   }
-
-  if (remark.length < 5 || remark.length > 255) {
+  if (remark.length < 2 || remark.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Chú thích có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorRemark,
     });
   }
   if (idMentor === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Bạn cần nhập thông tin chính xác Mentor`,
+      error: candidates.ErrorIdMentor,
     });
   }
-  if (technicalComments.length < 5 || technicalComments.length > 255) {
+  if (technicalComments.length < 2 || technicalComments.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `TechnicalComments có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorTechnicalComments,
     });
   }
-  if (technicalScore.length < 5 || technicalScore.length > 255) {
+  if (technicalScore.length < 2 || technicalScore.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài tối đa của Điểm kỹ thuật là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorTechnicalScore,
     });
   }
-  if (attitude.length < 5 || attitude.length > 255) {
+  if (attitude.length < 2 || attitude.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Thái độ có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorAttitude,
     });
   }
-  if (englishCommunication.length < 5 || englishCommunication.length > 255) {
+  if (englishCommunication.length < 2 || englishCommunication.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Tiếng Anh giao tiếp có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorEnglishCommunication,
     });
   }
-  if (comments.length < 5 || comments.length > 255) {
+  if (comments.length < 2 || comments.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Nhận xét có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorComments,
     });
   }
-  if (remarks.length < 5 || remarks.length > 255) {
+  if (remarks.length < 2 || remarks.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Các nhận xét có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorRemarks,
     });
   }
-  if (internshipDomain.length < 5 || remarks.length > 255) {
+  if (internshipDomain.length < 2 || remarks.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vị trí thực tập có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorInternshipDomain,
     });
   }
-  if (preferredSkills.length < 5 || preferredSkills.length > 255) {
+  if (preferredSkills.length < 2 || preferredSkills.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Kỹ năng ưa thích có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorPreferredSkill,
     });
   }
-  if (university.length < 5 || university.length > 255) {
+  if (university.length < 2 || university.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Trường đại học có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !`,
+      error: candidates.ErrorUniversity,
     });
   }
-  if (faculty.length < 5 || faculty.length > 255) {
+  if (faculty.length < 2 || faculty.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Khoa có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !`,
+      error: candidates.ErrorFaculty,
     });
   }
-  if (currentYearofStudy === "" ) {
+  if (currentYearofStudy === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng không được để trống năm học hiện tại của sinh viên`,
+      error: candidates.ErrorCurrentYearofStudy,
     });
   }
-  if (studentID.length < 5 || studentID.length > 255) {
+  if (studentID.length < 2 || studentID.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài của Mã sinh viên tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorStudentID,
     });
   }
-  if (preferredInternshipStartDate < "2020/01/01") {
+
+  const DateRequest = new Date(
+    preferredInternshipStartDate.slice(0, 4) +
+      "/" +
+      preferredInternshipStartDate.slice(5, 7) +
+      "/" +
+      preferredInternshipStartDate.slice(8, 10) +
+      ","
+  );
+  if (DateRequest.getTime() < dateNow.getTime()) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Ngày sinh không hợp lệ phải lớn hơn 01/01/2020 !!!",
+      error: candidates.ErrorPreferredInternshipStartDate,
     });
   }
   if (
-    preferredInternshipDuration.length < 5 ||
+    preferredInternshipDuration.length < 2 ||
     preferredInternshipDuration.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự !!!`,
+      error: candidates.ErrorPreferredInternshipDuration,
     });
   }
   if (internshipSchedule === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Bạn cần nhập thông tin chính xác Lịch thực tập`,
+      error: candidates.ErrorInternshipSchedule,
     });
   }
   if (!scoreRegex.test(GPA)) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập đúng điểm trung bình !!!`,
+      error: candidates.ErrorGPA,
     });
   }
-  if (idInternshipCourse === "") {
+
+  if (graduationYear.length < 2 || graduationYear.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Bạn cần nhập chính xác thông tin Khóa học Thực tập`,
+      error: candidates.ErrorGraduationYear,
     });
   }
-  if (graduationYear.length < 5 || graduationYear.length > 255) {
+  if (projectExperience.length < 2 || projectExperience.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `GraduationYear có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự`,
-    });
-  }
-  if (projectExperience.length < 5 || projectExperience.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: `ProjectExperience có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự`,
+      error: candidates.ErrorProjectExperience,
     });
   }
   if (
-    expectedGraduationSchedule.length < 5 ||
+    expectedGraduationSchedule.length < 2 ||
     expectedGraduationSchedule.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Lịch trình Tốt nghiệp Dự kiến ​​có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự`,
+      error: candidates.ErrorExpectedGraduationSchedule,
     });
   }
-  if (remainingSubjects.length < 5 || remainingSubjects.length > 255) {
+  if (remainingSubjects.length < 2 || remainingSubjects.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng nhập các môn học còn lại nhưng không được quá 255 ký tự`,
+      error: candidates.ErrorRemainingSubjects,
     });
   }
   if (
-    covidVaccinationiInformation.length < 5 ||
+    covidVaccinationiInformation.length < 2 ||
     covidVaccinationiInformation.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Thông tin tiêm chủng Covid có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tựs `,
+      error: candidates.ErrorCovidVaccinationiInformation,
     });
   }
-  if (certificationDate.length < 5 || certificationDate.length > 255) {
+  if (certificationDate.length < 2 || certificationDate.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Độ dài tối đa của ngày chứng nhận là 255, độ dài tối thiểu là 5 ký tự `,
+      error: candidates.ErrorCertificationDate,
     });
   }
   if (
-    covidVaccinationCertificate.length < 5 ||
+    covidVaccinationCertificate.length < 2 ||
     covidVaccinationCertificate.length > 255
   ) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Giấy chứng nhận tiêm chủng Covid có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự `,
+      error: candidates.ErrorCovidVaccinationCertificate,
     });
   }
-  if (interviewLink ==="") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Liên kết phỏng vấn có độ dài tối đa là 255, độ dài tối thiểu là 5 ký tự`,
-    });
-  }
-  if (interviewer === "") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Bạn cần nhập đúng thông tin Người phỏng vấn !`,
-    });
-  }
-  if (!emailRegex.test(emailInterviewer)) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Đây không phải là Email!",
-    });
-  }
+
   if (pcType === "") {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Vui lòng chọn thiết bị thực tập`,
+      error: candidates.ErrorPcType,
     });
   }
 
@@ -569,8 +558,6 @@ const update = async (req, res) => {
     tel: tel,
     emailCandidate: emailCandidate,
     idDG: idDG,
-    interviewTime: interviewTime,
-    interviewDate: interviewDate,
     status: status,
     remark: remark,
     idMentor: idMentor,
@@ -590,7 +577,6 @@ const update = async (req, res) => {
     preferredInternshipDuration: preferredInternshipDuration,
     internshipSchedule: internshipSchedule,
     GPA: GPA,
-    idInternshipCourse: idInternshipCourse,
     graduationYear: graduationYear,
     projectExperience: projectExperience,
     expectedGraduationSchedule: expectedGraduationSchedule,
@@ -598,89 +584,12 @@ const update = async (req, res) => {
     covidVaccinationiInformation: covidVaccinationiInformation,
     certificationDate: certificationDate,
     covidVaccinationCertificate: covidVaccinationCertificate,
-    interviewLink: interviewLink,
-    interviewer: interviewer,
-    emailInterviewer: emailInterviewer,
     pcType: pcType,
     idCandidate: id,
   });
   return res.status(statusCodes.OK).json({
     data: result,
-    message: result ? "Cập nhật thành công !" : "Ứng viên không tồn tại !!!",
-  });
-};
-
-const updateInterview = async (req, res) => {
-  const id = req.params.id;
-  const {
-    emailInterviewer,
-    interviewLink,
-    interviewDate,
-    interviewTime,
-    interviewer,
-  } = req.body;
-  if (
-    !emailInterviewer ||
-    !interviewLink ||
-    !interviewDate ||
-    !interviewTime ||
-    !interviewer
-  ) {
-    return res
-      .status(statusCodes.BAD_REQUEST)
-      .json({ error: "Bạn cần nhập đủ thông tin" });
-  }
-
-  const emailRegex =
-    /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
-
-  if (!emailRegex.test(emailInterviewer)) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: "Email không hợp lệ",
-    });
-  }
-
-  const dateNow = new Date();
-  const dateRequest = new Date(
-    interviewDate.slice(0, 4) +
-      "/" +
-      interviewDate.slice(5, 7) +
-      "/" +
-      interviewDate.slice(8, 10) +
-      "," +
-      interviewTime.slice(0, 2) +
-      ":" +
-      interviewTime.slice(3, 5)
-  );
-
-  if (dateRequest.getTime() < dateNow.getTime()) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Ngày phỏng vấn nhỏ hơn ngày hiện tại`,
-    });
-  }
-  if (interviewLink.length < 5 || interviewLink.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Chiều dài link phỏng vấn không đủ`,
-    });
-  }
-  if (interviewer.length < 2 || interviewer.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: `Chiều dài tên người phỏng vấn không đủ`,
-    });
-  }
-
-  const result = await candidates.updateInterview({
-    emailInterviewer: emailInterviewer,
-    interviewLink: interviewLink,
-    interviewDate: interviewDate,
-    interviewTime: interviewTime,
-    interviewer: interviewer,
-    idCandidate: id,
-  });
-
-  return res.status(statusCodes.OK).json({
-    data: result,
-    message: result ? "Update successfully" : "Update fail !!!",
+    message: result ? candidates.Message_Done : candidates.Message_Error,
   });
 };
 
@@ -689,6 +598,5 @@ module.exports = {
   getCandidate,
   getBatch,
   remove,
-  update,
-  updateInterview
+  update
 };

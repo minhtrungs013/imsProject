@@ -41,7 +41,7 @@ const Candidate = (candidates) => {
   this.pcType = candidates.pcType;
   this.deleteAt = candidates.deleteAt;
 };
-Candidate.getAll = async (condition, columns, page, limit) => {
+Candidate.getByID = async (condition, columns, page, limit) => {
   try {
     if (columns && columns.length > 0) {
       listColumn = columns.join();
@@ -52,7 +52,7 @@ Candidate.getAll = async (condition, columns, page, limit) => {
     }
     const where = buildWhere(condition);
     let listColumn = `*`;
-    const strSql = `SELECT ${listColumn} FROM candidates LIMIT ${limit} OFFSET ${offset}`;
+    const strSql = `SELECT ${listColumn} FROM candidates WHERE ${where} LIMIT ${limit} OFFSET ${offset}`;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -70,17 +70,10 @@ Candidate.getBatch = async (condition, columns, page, limit) => {
       offset = (page - 1) * limit;
     }
     const where = buildWhere(condition);
-    let listColumn = `candidates.idCandidate,
-        candidates.fullName,
-        candidates.emailCandidate, 
-        candidates.studentID,
-        candidates.university,
-        candidates.internshipDomain,
-        internshipcourse.nameCoure,
-        candidates.status`;
-    const strSql = `SELECT ${listColumn} FROM candidates INNER JOIN internshipcourse 
-        WHERE  
-     candidates.idInternshipCourse = internshipcourse.idInternshipCourse AND ${where} LIMIT ${limit} OFFSET ${offset}`;
+    let listColumn = "*";
+    const strSql = `SELECT  ${listColumn} FROM candidates 
+    WHERE ${where} ORDER BY idCandidate DESC LIMIT ${limit} OFFSET ${offset}`;
+
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -110,6 +103,7 @@ Candidate.update = async (condition) => {
     console.log(err);
   }
 };
+
 Candidate.remove = async (condition) => {
   try {
     const where = buildWhere(condition);
@@ -123,7 +117,6 @@ Candidate.remove = async (condition) => {
   }
 };
 
-
 Candidate.getTotalCount = async (condition) => {
   try {
     const where = buildWhere(condition);
@@ -136,11 +129,19 @@ Candidate.getTotalCount = async (condition) => {
     throw err;
   }
 };
-//test
-Candidate.updateInterview = async (condition) => {
+const date = new Date();
+const year = date.getFullYear();
+const month = date.getMonth() + 1;
+const day = date.getDate();
+const hour = date.getHours();
+const minute = date.getMinutes();
+const second = date.getSeconds();
+const dateDelete = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+Candidate.softDelete = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const sql = `UPDATE candidates SET ? WHERE ${where}`;
+    const sql = `UPDATE candidates SET deleteAt = '${dateDelete}' WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
     return result.affectedRows !== 0;
@@ -148,7 +149,36 @@ Candidate.updateInterview = async (condition) => {
     console.log(err);
   }
 };
-//test
+Candidate.restore = async (condition) => {
+  try {
+    const where = buildWhere(condition);
+    const sql = `UPDATE candidates SET deleteAt = null WHERE ${where}`;
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(sql, condition);
+    return result.affectedRows !== 0;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+Candidate.getBin = async (condition, columns, page, limit) => {
+  try {
+    if (columns && columns.length > 0) {
+      listColumn = columns.join();
+    }
+    let offset = 0;
+    if (page > 1) {
+      offset = (page - 1) * limit;
+    }
+    const where = buildWhere(condition);
+    let listColumn = "*";
+    const strSql = `SELECT ${listColumn} FROM candidates WHERE candidates.deleteAt IS NOT NULL LIMIT ${limit} OFFSET ${offset}`;
+    const query = util.promisify(connect.query).bind(connect);
+    return await query(strSql);
+  } catch (err) {
+    console.log(err);
+  }
+};
 const buildWhere = (condition) => {
   let strWhere = "1=1";
 
@@ -156,13 +186,70 @@ const buildWhere = (condition) => {
     strWhere +=
       " AND candidates.idInternshipCourse =" + condition.internshipcourseId;
   }
+
   if (condition.candidateId) {
     strWhere += " AND idCandidate = " + condition.candidateId;
   }
   if (condition.idCandidate) {
     strWhere += " AND idCandidate = " + condition.idCandidate;
   }
+  if (condition.idcandidate) {
+    strWhere += " AND idCandidate = " + condition.idcandidate;
+  }
 
   return strWhere;
 };
+Candidate.ErrorRequest = "Bạn cần nhập đủ thông tin";
+Candidate.ErrorNameSpecialChars = "Tên ứng viên không chứa ký tự đặt biệt !";
+Candidate.ErrorNameLength = "Vui lòng nhập đầy đủ Họ và tên !";
+Candidate.ErrorSDT = "Vui lòng nhập lại Số điện thoại!";
+Candidate.ErrorEmail = "Vui lòng nhập lại Email !";
+Candidate.ErrorEmailInterviewer = "Vui lòng nhập lại email ứng viên !";
+Candidate.ErrorIdDG = "Vui lòng nhập đầy đủ thông tin DG!";
+Candidate.ErrorInterviewDate =
+  "Ngày phỏng vấn không được nhỏ hơn ngày hiện tại !";
+Candidate.ErrorStatus = "Vui lòng chọn Pass hoặc Fail !";
+Candidate.ErrorInternshipDomain = "Vị trí thực tập không được quá 255 ký tự !";
+Candidate.ErrorPreferredSkill = "Kỹ năng ưa thích không được quá 255 ký tự !";
+Candidate.ErrorUniversity = "Trường đại học không được quá 255 ký tự !";
+Candidate.ErrorFaculty = " Tên Khoa không được quá 255 ký tự !";
+Candidate.ErrorCurrentYearofStudy = "Bạn thuộc sinh viên năm nào ?";
+Candidate.ErrorStudentID = "Mã sinh viên không được quá 255 ký tự !";
+Candidate.ErrorPreferredInternshipDuration =
+  "Vị trí thực tập không được quá 255 ký tự !";
+Candidate.ErrorInternshipSchedule =
+  "Vui lòng nhập đầy đủ thông tin kỳ thực tập !";
+Candidate.ErrorNameSpecialChars = "Tên ứng viên không chứa ký tự đặt biệt !";
+Candidate.ErrorGPA = "Vui lòng nhập điểm trung bình tổng kết !";
+Candidate.ErrorIdInternshipCourse = "Vui lòng nhập đầy đủ thông tin !";
+Candidate.ErrorGraduationYear =
+  "Vui lòng không để trống trường Năm học hiện tại !";
+Candidate.ErrorProjectExperience =
+  "Vui lòng nhập các dự án đã tham gia không được quá 255 ký tự !";
+Candidate.ErrorExpectedGraduationSchedule =
+  "Vui lòng nhập dự kiến tốt nghiệp không được quá 255 ký tự !";
+Candidate.ErrorRemainingSubjects =
+  "Các môn học còn lại nhưng không được quá 255 ký tự !";
+Candidate.ErrorCovidVaccinationiInformation =
+  "Thông tin tim chủng Covid không được quá 255 ký tự !";
+Candidate.ErrorCertificationDate = "Không được để trống ngày chứng nhận !";
+Candidate.ErrorCovidVaccinationCertificate =
+  "`Vui lòng không nhập  thông tin Giấy chứng nhận tiêm chủng covid quá 255 ký tự !";
+Candidate.ErrorPcType = "Vui lòng điền thông tin loại máy thực tập !";
+Candidate.ErrorPreferredInternshipStartDate =
+  "Ngày bắt đầu thực tập không được nhỏ hơn ngày hiện tại !";
+Candidate.ErrorInterviewer = "Bạn cần nhập thông tin Người phỏng vấn !";
+Candidate.ErrorInterviewerLink = "Vui lòng nhập Liên kết phỏng vấn đầy đủ";
+Candidate.ErrorRemarks = "Các nhận xét không được quá 255 ký tự !";
+Candidate.ErrorComments = " Nhận xét không được nhập quá 255 ký tự !";
+Candidate.ErrorEnglishCommunication =
+  " Tiếng Anh giao tiếp không được nhập quá 255 ký tự !";
+Candidate.ErrorRemark = " Chú thích không được nhập quá 255 ký tự !";
+Candidate.ErrorIdMentor = "Không được để trống thông tin Mentor !";
+Candidate.ErrorTechnicalComments =
+  " Thái độ ứng viên không được nhập quá 255 ký tự !";
+Candidate.ErrorTechnicalScore =
+  "  Điểm kỹ thuật không được  nhập quá 255 ký tự !";
+Candidate.Message_Done = "Done !";
+Candidate.Message_Error = "Fail !";
 module.exports = Candidate;
