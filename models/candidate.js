@@ -80,6 +80,18 @@ Candidate.getBatch = async (condition, columns, page, limit) => {
     console.log(err);
   }
 };
+Candidate.getTotalCount = async (condition) => {
+  try {
+    const where = buildWhere(condition);
+    const sql = `SELECT count(*) as totalCount FROM candidates WHERE ${where}`;
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(sql);
+    return result[0].totalCount;
+  } catch (err) {
+    console.log(err.message);
+    throw err;
+  }
+};
 
 Candidate.create = async (condition) => {
   try {
@@ -117,18 +129,7 @@ Candidate.remove = async (condition) => {
   }
 };
 
-Candidate.getTotalCount = async (condition) => {
-  try {
-    const where = buildWhere(condition);
-    const sql = `SELECT count(*) as totalCount FROM candidates WHERE ${where}`;
-    const query = util.promisify(connect.query).bind(connect);
-    const result = await query(sql);
-    return result[0].totalCount;
-  } catch (err) {
-    console.log(err.message);
-    throw err;
-  }
-};
+
 
 const buildWhere = (condition) => {
   let strWhere = "1=1";
@@ -143,6 +144,9 @@ const buildWhere = (condition) => {
   }
   if (condition.idcandidate) {
     strWhere += " AND idCandidate = " + condition.idcandidate;
+  }
+  if (condition.fullName) {
+    strWhere += ' AND fullName LIKE "%' + condition.fullName + '%" ';
   }
 
   return strWhere;
