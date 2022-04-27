@@ -16,6 +16,7 @@
     "db-migrate": "^0.11.13",
     "db-migrate-mysql": "^2.2.0",
     "dotenv": "^16.0.0",
+    "exceljs": "^4.3.0",
     "express": "^4.17.3",
     "fs": "^0.0.1-security",
     "http-status-codes": "^2.2.0",
@@ -25,8 +26,11 @@
     "moment": "^2.29.2",
     "multer": "^1.4.4",
     "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
+    "read-excel-file": "^5.2.28",
+    "sequelize": "^6.17.0",
     "yaml": "^1.10.2"
   }
 }
