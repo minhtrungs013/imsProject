@@ -31,16 +31,18 @@ const Candidate = (candidate) => {
   this.internshipSchedule = candidate.internshipSchedule;
   this.GPA = candidate.GPA;
   this.idInternshipCourse = candidate.idInternshipCourse;
-  this.GraduationYear = candidate.GraduationYear;
-  this.ProjectExperience = candidate.ProjectExperience;
-  this.ExpectedGraduationSchedule = candidate.ExpectedGraduationSchedule;
-  this.RemainingSubjects = candidate.RemainingSubjects;
-  this.CovidVaccinationiInformation = candidate.CovidVaccinationiInformation;
-  this.CertificationDate = candidate.CertificationDate;
-  this.CovidVaccinationCertificate = candidate.CovidVaccinationCertificate;
-  this.InterviewLink = candidate.InterviewLink;
+  this.graduationYear = candidate.graduationYear;
+  this.projectExperience = candidate.projectExperience;
+  this.expectedGraduationSchedule = candidate.expectedGraduationSchedule;
+  this.remainingSubjects = candidate.remainingSubjects;
+  this.covidVaccinationiInformation = candidate.covidVaccinationiInformation;
+  this.certificationDate = candidate.certificationDate;
+  this.covidVaccinationCertificate = candidate.covidVaccinationCertificate;
+  this.interviewLink = candidate.interviewLink;
   this.emailInterviewer = candidate.emailInterviewer;
+  this.interviewer = candidate.interviewer;
   this.pcType = candidate.pcType;
+  this.deleteAtt = candidate.deleteAtt;
 };
 Candidate.getInterview = async (condition, columns, page, limit) => {
   try {
@@ -130,5 +132,14 @@ Candidate.ERROR_ID = "Internview không tồn tại trong hệ thống !";
 Candidate.ERROR_STATUS = "Kết quả phải là Pass hoặc Fail";
 Candidate.SUCCESS_DEL = "Xóa thành công";
 Candidate.SUCCESS_UPDATE = "Cập nhật thành công";
+Candidate.ErrorRequest = "Bạn cần nhập đủ thông tin";
+Candidate.ErrorEmail = "Định dang mail không hợp lệ";
+Candidate.ErrorInterviewDate =
+  "Ngày phỏng vấn không được nhỏ hơn ngày hiện tại";
+Candidate.ErrorInterviewLink = "Chiều dài link phỏng vấn không đủ";
+Candidate.ErroSpecialChars = "Tên người phỏng vấn không chứa ký tự đặt biệt";
+Candidate.ErrorInterviewer = "Tên người phỏng vấn không đủ chiều dài";
+Candidate.Success = "Cập nhật thành công";
+Candidate.Failure = "Cập nhật thất bại";
 
 module.exports = Candidate;
