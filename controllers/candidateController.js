@@ -36,7 +36,7 @@ const getBatch = async (req, res) => {
 
   const id = req.params.id;
   const results = await candidates.getBatch(
-    { internshipcourseId: id, fullName: fullName },
+    { internshipcourseId: id, fullNames: fullName },
     [],
     page,
     limit
@@ -57,7 +57,6 @@ const create = async (req, res) => {
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
   const scoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
-
   const id = req.params.id;
   const {
     fullName,
@@ -111,6 +110,7 @@ const create = async (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: candidates.ErrorRequest });
   }
+ 
 
   const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
   const checkForSpecialChar = function (string) {
@@ -135,6 +135,18 @@ const create = async (req, res) => {
   if (!sdtRegex.test(tel)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorSDT,
+    });
+  }
+  const countemail = await candidates.getBatch(
+    { emailCandidate: emailCandidate,
+      idInternshipCourse: idInternshipCourse },
+    [],
+    1,
+    1
+  );
+  if (countemail.length) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: candidates.ERROR_EMAIL_DUPLICATE,
     });
   }
   if (!emailRegex.test(emailCandidate)) {
@@ -301,16 +313,14 @@ const update = async (req, res) => {
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
   const scoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
-  [0 - 9];
+  const ScoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
   const id = req.params.id;
   const {
     fullName,
     tel,
     emailCandidate,
-    idDG,
     status,
     remark,
-    idMentor,
     technicalComments,
     technicalScore,
     attitude,
@@ -340,16 +350,6 @@ const update = async (req, res) => {
     !fullName ||
     !tel ||
     !emailCandidate ||
-    !idDG ||
-    !status ||
-    !remark ||
-    !idMentor ||
-    !technicalComments ||
-    !technicalScore ||
-    !attitude ||
-    !englishCommunication ||
-    !comments ||
-    !remarks ||
     !internshipDomain ||
     !preferredSkills ||
     !university ||
@@ -373,6 +373,20 @@ const update = async (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: candidates.ErrorRequest });
   }
+  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+  const checkForSpecialChar = function (string) {
+    for (i = 0; i < specialChars.length; i++) {
+      if (string.indexOf(specialChars[i]) > -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+  if (checkForSpecialChar(fullName)) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: candidates.ErrorNameSpecialChars });
+  }
   if (fullName.length < 2 || fullName.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorFullName,
@@ -388,58 +402,19 @@ const update = async (req, res) => {
       error: candidates.ErrorEmail,
     });
   }
-  if (idDG === "") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorIdDG,
-    });
-  }
 
   if (status === "") {
     return res
       .status(statusCodes.BAD_REQUEST)
       .json({ error: candidates.ErrorStatus });
   }
-  if (remark.length < 2 || remark.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorRemark,
-    });
-  }
-  if (idMentor === "") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorIdMentor,
-    });
-  }
-  if (technicalComments.length < 2 || technicalComments.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorTechnicalComments,
-    });
-  }
-  if (technicalScore.length < 2 || technicalScore.length > 255) {
+
+  if (!scoreRegex.test(technicalScore)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorTechnicalScore,
     });
   }
-  if (attitude.length < 2 || attitude.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorAttitude,
-    });
-  }
-  if (englishCommunication.length < 2 || englishCommunication.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorEnglishCommunication,
-    });
-  }
-  if (comments.length < 2 || comments.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorComments,
-    });
-  }
-  if (remarks.length < 2 || remarks.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ErrorRemarks,
-    });
-  }
-  if (internshipDomain.length < 2 || remarks.length > 255) {
+  if (internshipDomain.length < 2 || internshipDomain.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorInternshipDomain,
     });
@@ -496,7 +471,7 @@ const update = async (req, res) => {
       error: candidates.ErrorInternshipSchedule,
     });
   }
-  if (!scoreRegex.test(GPA)) {
+  if (!ScoreRegex.test(GPA)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorGPA,
     });
@@ -557,10 +532,8 @@ const update = async (req, res) => {
     fullName: fullName,
     tel: tel,
     emailCandidate: emailCandidate,
-    idDG: idDG,
     status: status,
     remark: remark,
-    idMentor: idMentor,
     technicalComments: technicalComments,
     technicalScore: technicalScore,
     attitude: attitude,
@@ -587,6 +560,8 @@ const update = async (req, res) => {
     pcType: pcType,
     idCandidate: id,
   });
+  console.log(result);
+
   return res.status(statusCodes.OK).json({
     data: result,
     message: result ? candidates.Message_Done : candidates.Message_Error,
@@ -598,5 +573,5 @@ module.exports = {
   getCandidate,
   getBatch,
   remove,
-  update
+  update,
 };

@@ -110,6 +110,7 @@ Candidate.update = async (condition) => {
     const sql = `UPDATE candidates SET ? WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
+   console.log(sql)
     return result.affectedRows !== 0;
   } catch (err) {
     console.log(err);
@@ -119,7 +120,7 @@ Candidate.update = async (condition) => {
 Candidate.remove = async (condition) => {
   try {
     const where = buildWhere(condition);
-    const sql = `DELETE FROM candidates  WHERE ${where}`;
+    const sql = `DELETE FROM candidates WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql);
     return result.affectedRows !== 0;
@@ -142,11 +143,16 @@ const buildWhere = (condition) => {
   if (condition.idCandidate) {
     strWhere += " AND idCandidate = " + condition.idCandidate;
   }
-  if (condition.idcandidate) {
-    strWhere += " AND idCandidate = " + condition.idcandidate;
+  if (condition.candidateId) {
+    strWhere += " AND idCandidate = " + condition.candidateId;
   }
-  if (condition.fullName) {
-    strWhere += ' AND fullName LIKE "%' + condition.fullName + '%" ';
+  if (condition.fullNames) {
+    strWhere += ' AND fullName LIKE "%' + condition.fullNames + '%" ';
+  }
+
+  if (condition.idInternshipCourse) {
+    strWhere +=
+      ' AND candidates.idInternshipCourse = "' + condition.idInternshipCourse + '"';
   }
 
   return strWhere;
@@ -157,51 +163,51 @@ Candidate.ErrorNameLength = "Vui lòng nhập đầy đủ Họ và tên !";
 Candidate.ErrorSDT = "Vui lòng nhập lại Số điện thoại!";
 Candidate.ErrorEmail = "Vui lòng nhập lại Email !";
 Candidate.ErrorEmailInterviewer = "Vui lòng nhập lại email ứng viên !";
-Candidate.ErrorIdDG = "Vui lòng nhập đầy đủ thông tin DG!";
 Candidate.ErrorInterviewDate =
   "Ngày phỏng vấn không được nhỏ hơn ngày hiện tại !";
 Candidate.ErrorStatus = "Vui lòng chọn Pass hoặc Fail !";
-Candidate.ErrorInternshipDomain = "Vị trí thực tập không được quá 255 ký tự !";
-Candidate.ErrorPreferredSkill = "Kỹ năng ưa thích không được quá 255 ký tự !";
-Candidate.ErrorUniversity = "Trường đại học không được quá 255 ký tự !";
-Candidate.ErrorFaculty = " Tên Khoa không được quá 255 ký tự !";
+Candidate.ErrorInternshipDomain = "Vị trí thực tập từ 2-255 ký tự !";
+Candidate.ErrorPreferredSkill = "Kỹ năng ưa thích từ 2-255 ký tự !";
+Candidate.ErrorUniversity = "Trường đại học không từ 2-255 ký tự !";
+Candidate.ErrorFaculty = " Tên Khoa từ 2-255 ký tự !";
 Candidate.ErrorCurrentYearofStudy = "Bạn thuộc sinh viên năm nào ?";
 Candidate.ErrorStudentID = "Mã sinh viên không được quá 255 ký tự !";
 Candidate.ErrorPreferredInternshipDuration =
-  "Vị trí thực tập không được quá 255 ký tự !";
+  "Vị trí thực tập từ 2-255 ký tự!";
 Candidate.ErrorInternshipSchedule =
   "Vui lòng nhập đầy đủ thông tin kỳ thực tập !";
 Candidate.ErrorNameSpecialChars = "Tên ứng viên không chứa ký tự đặt biệt !";
-Candidate.ErrorGPA = "Vui lòng nhập điểm trung bình tổng kết !";
+Candidate.ErrorGPA = "Điểm trung bình có giá trị từ 0 đến 10 !";
 Candidate.ErrorIdInternshipCourse = "Vui lòng nhập đầy đủ thông tin !";
 Candidate.ErrorGraduationYear =
   "Vui lòng không để trống trường Năm học hiện tại !";
 Candidate.ErrorProjectExperience =
-  "Vui lòng nhập các dự án đã tham gia không được quá 255 ký tự !";
+  "Các dự án đã tham gia từ 2-255 ký tự !";
 Candidate.ErrorExpectedGraduationSchedule =
-  "Vui lòng nhập dự kiến tốt nghiệp không được quá 255 ký tự !";
+  "Dự kiến tốt nghiệp từ 2-255 ký tự !";
 Candidate.ErrorRemainingSubjects =
-  "Các môn học còn lại nhưng không được quá 255 ký tự !";
+  "Các môn học còn lại từ 2-255 ký tự !";
 Candidate.ErrorCovidVaccinationiInformation =
-  "Thông tin tim chủng Covid không được quá 255 ký tự !";
+  "Thông tin tim chủng Covid từ 2-255 ký tự !";
 Candidate.ErrorCertificationDate = "Không được để trống ngày chứng nhận !";
 Candidate.ErrorCovidVaccinationCertificate =
-  "`Vui lòng không nhập  thông tin Giấy chứng nhận tiêm chủng covid quá 255 ký tự !";
+  "Thông tin Giấy chứng nhận tiêm chủng covid từ 2-255 ký tự !";
 Candidate.ErrorPcType = "Vui lòng điền thông tin loại máy thực tập !";
 Candidate.ErrorPreferredInternshipStartDate =
   "Ngày bắt đầu thực tập không được nhỏ hơn ngày hiện tại !";
 Candidate.ErrorInterviewer = "Bạn cần nhập thông tin Người phỏng vấn !";
 Candidate.ErrorInterviewerLink = "Vui lòng nhập Liên kết phỏng vấn đầy đủ";
-Candidate.ErrorRemarks = "Các nhận xét không được quá 255 ký tự !";
-Candidate.ErrorComments = " Nhận xét không được nhập quá 255 ký tự !";
+Candidate.ErrorRemarks = "Các nhận xét từ 2-255 ký tự !";
+Candidate.ErrorComments = " Nhận xét từ 2-255 ký tự !";
 Candidate.ErrorEnglishCommunication =
-  " Tiếng Anh giao tiếp không được nhập quá 255 ký tự !";
-Candidate.ErrorRemark = " Chú thích không được nhập quá 255 ký tự !";
+  " Tiếng Anh giao tiếp từ 2-255 ký tự !";
+Candidate.ErrorRemark = " Chú thích từ 2-255 ký tự !";
 Candidate.ErrorIdMentor = "Không được để trống thông tin Mentor !";
 Candidate.ErrorTechnicalComments =
-  " Thái độ ứng viên không được nhập quá 255 ký tự !";
+  " Thái độ ứng viên từ 2-255 ký tự !";
 Candidate.ErrorTechnicalScore =
-  "  Điểm kỹ thuật không được  nhập quá 255 ký tự !";
+  "  Điểm kỹ thuật từ 2-255 ký tự!";
 Candidate.Message_Done = "Done !";
 Candidate.Message_Error = "Fail !";
+Candidate.ERROR_EMAIL_DUPLICATE="Email đã tồn tại";
 module.exports = Candidate;
