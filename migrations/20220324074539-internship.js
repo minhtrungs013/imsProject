@@ -26,7 +26,6 @@ exports.up = function (db, callback) {
       },
       fullNameInternship: "string",
       address: "string",
-      dayOfBirth: "date",
       university: "string",
       email: "string",
       idMentor: {
