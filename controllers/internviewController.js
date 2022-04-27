@@ -20,13 +20,13 @@ const get = async (req, res) => {
     updateInsert = req.query.updateInsert;
   }
   const results = await candidateModel.getInterview(
-    {idInternshipCourse :idInternshipCourse , fullName: fullName, statusPr: status,updateInserts: updateInsert },
+    {idInternshipCourse :idInternshipCourse , fullNames: fullName, statusPr: status,updateInserts: updateInsert },
     [],
     page,
     limit
   );
   const total = await candidateModel.getTotalCount({
-    fullName: fullName,
+    fullNames: fullName,
     statusPr: status,
     updateInsert: updateInsert
   });
