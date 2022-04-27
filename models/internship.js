@@ -5,7 +5,6 @@ const Internship = (internship) => {
   this.idInternship = internship.idInternship;
   this.fullNameInternship = internship.fullNameInternship;
   this.address = internship.address;
-  this.dayOfBirth = internship.dayOfBirth;
   this.university = internship.university;
   this.email = internship.email;
   this.idMentor = internship.idMentor;
@@ -34,7 +33,6 @@ const listColumn = `
 internship.idInternship,  
 internship.fullNameInternship,
 internship.address,
-internship.dayOfBirth,
 internship.university,
 internship.email,
 internship.telInternship,
