@@ -26,14 +26,14 @@ app.use(express.json());
 
 //ROUTES
 app.use(authRoute);
-app.use(courseRoute);
-app.use(candidate);
-app.use(mentor);
-app.use(importCandidate);
-app.use(email);
-app.use(internview);
-app.use(dg);
-app.use(internship);
+app.use(requireToken, courseRoute);
+app.use(requireToken, candidate);
+app.use(requireToken, mentor);
+app.use(requireToken, importCandidate);
+app.use(requireToken, email);
+app.use(requireToken, internview);
+app.use(requireToken, dg);
+app.use(requireToken, internship);
 app.listen(port, () => {
   console.log("App start success");
 });
