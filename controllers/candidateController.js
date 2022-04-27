@@ -30,13 +30,18 @@ const getBatch = async (req, res) => {
   }
 
   let fullName = "";
+  let status = "";
   if (req.query.fullName) {
     fullName = req.query.fullName;
   }
+  if(req.query.status){
+    status = req.query.status;
+  }
 
   const id = req.params.id;
+  
   const results = await candidates.getBatch(
-    { internshipcourseId: id, fullNames: fullName },
+    { internshipcourseId: id, fullNames: fullName, statuss: status },
     [],
     page,
     limit
@@ -110,8 +115,18 @@ const create = async (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: candidates.ErrorRequest });
   }
- 
 
+  const countemail = await candidates.getBatch(
+    { emailCandidate: emailCandidate, idInternshipCourses: idInternshipCourse },
+    [],
+    1,
+    1
+  );
+  if (countemail.length) {
+    return res.status(statusCodes.BAD_REQUEST).json({
+      error: candidates.ERROR_EMAIL_DUPLICATE,
+    });
+  }
   const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
   const checkForSpecialChar = function (string) {
     for (i = 0; i < specialChars.length; i++) {
@@ -137,18 +152,7 @@ const create = async (req, res) => {
       error: candidates.ErrorSDT,
     });
   }
-  const countemail = await candidates.getBatch(
-    { emailCandidate: emailCandidate,
-      idInternshipCourse: idInternshipCourse },
-    [],
-    1,
-    1
-  );
-  if (countemail.length) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ERROR_EMAIL_DUPLICATE,
-    });
-  }
+
   if (!emailRegex.test(emailCandidate)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorEmail,
@@ -235,7 +239,18 @@ const create = async (req, res) => {
       error: candidates.ErrorCovidVaccinationiInformation,
     });
   }
-  if (certificationDate === "") {
+  const dateRequestCertification = new Date(
+    certificationDate.slice(0, 4) +
+      "/" +
+      certificationDate.slice(5, 7) +
+      "/" +
+      certificationDate.slice(8, 10) +
+      ","
+  );
+  if (
+    dateRequestCertification.getTime() > dateNow.getTime() ||
+    dateRequestCertification.getTime() == dateNow.getTime()
+  ) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorCertificationDate,
     });
@@ -254,7 +269,6 @@ const create = async (req, res) => {
       error: candidates.ErrorPcType,
     });
   }
-
   const dateRequest = new Date(
     preferredInternshipStartDate.slice(0, 4) +
       "/" +
@@ -263,12 +277,14 @@ const create = async (req, res) => {
       preferredInternshipStartDate.slice(8, 10) +
       ","
   );
-  if (dateRequest.getTime() < dateNow.getTime()) {
+  if (
+    dateRequest.getTime() < dateNow.getTime() ||
+    dateRequest.getTime() == dateNow.getTime()
+  ) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorPreferredInternshipStartDate,
     });
   }
-
   const result = await candidates.create({
     fullName: fullName,
     tel: tel,
@@ -293,7 +309,6 @@ const create = async (req, res) => {
     covidVaccinationCertificate: covidVaccinationCertificate,
     pcType: pcType,
   });
-
   return res.status(statusCodes.OK).json({
     status: result,
     error: result ? candidates.Message_Done : candidates.Message_Error,
@@ -319,8 +334,7 @@ const update = async (req, res) => {
     fullName,
     tel,
     emailCandidate,
-    status,
-    remark,
+  
     technicalComments,
     technicalScore,
     attitude,
@@ -402,13 +416,6 @@ const update = async (req, res) => {
       error: candidates.ErrorEmail,
     });
   }
-
-  if (status === "") {
-    return res
-      .status(statusCodes.BAD_REQUEST)
-      .json({ error: candidates.ErrorStatus });
-  }
-
   if (!scoreRegex.test(technicalScore)) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorTechnicalScore,
@@ -445,7 +452,7 @@ const update = async (req, res) => {
     });
   }
 
-  const DateRequest = new Date(
+  const dateRequest = new Date(
     preferredInternshipStartDate.slice(0, 4) +
       "/" +
       preferredInternshipStartDate.slice(5, 7) +
@@ -453,7 +460,10 @@ const update = async (req, res) => {
       preferredInternshipStartDate.slice(8, 10) +
       ","
   );
-  if (DateRequest.getTime() < dateNow.getTime()) {
+  if (
+    dateRequest.getTime() < dateNow.getTime() ||
+    dateRequest.getTime() == dateNow.getTime()
+  ) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorPreferredInternshipStartDate,
     });
@@ -508,7 +518,18 @@ const update = async (req, res) => {
       error: candidates.ErrorCovidVaccinationiInformation,
     });
   }
-  if (certificationDate.length < 2 || certificationDate.length > 255) {
+  const dateRequestCertification = new Date(
+    certificationDate.slice(0, 4) +
+      "/" +
+      certificationDate.slice(5, 7) +
+      "/" +
+      certificationDate.slice(8, 10) +
+      ","
+  );
+  if (
+    dateRequestCertification.getTime() > dateNow.getTime() ||
+    dateRequestCertification.getTime() == dateNow.getTime()
+  ) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: candidates.ErrorCertificationDate,
     });
@@ -532,8 +553,6 @@ const update = async (req, res) => {
     fullName: fullName,
     tel: tel,
     emailCandidate: emailCandidate,
-    status: status,
-    remark: remark,
     technicalComments: technicalComments,
     technicalScore: technicalScore,
     attitude: attitude,

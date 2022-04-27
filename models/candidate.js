@@ -97,8 +97,9 @@ Candidate.create = async (condition) => {
   try {
     const sql = `INSERT INTO candidates SET ?`;
     const query = util.promisify(connect.query).bind(connect);
-    const result = await query(sql, condition);
+    const result = await query(sql, condition)
     return result.affectedRows !== 0;
+
   } catch (err) {
     console.log(err);
   }
@@ -110,7 +111,6 @@ Candidate.update = async (condition) => {
     const sql = `UPDATE candidates SET ? WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
-   console.log(sql)
     return result.affectedRows !== 0;
   } catch (err) {
     console.log(err);
@@ -149,11 +149,19 @@ const buildWhere = (condition) => {
   if (condition.fullNames) {
     strWhere += ' AND fullName LIKE "%' + condition.fullNames + '%" ';
   }
-
-  if (condition.idInternshipCourse) {
-    strWhere +=
-      ' AND candidates.idInternshipCourse = "' + condition.idInternshipCourse + '"';
+  if (condition.statuss) {
+    strWhere += ' AND status LIKE "%' + condition.statuss + '%" ';
   }
+
+  if (condition.emailCandidate) {
+    strWhere +=
+      ' AND candidates.emailCandidate = "' + condition.emailCandidate + '"';
+  } 
+   if (condition.idInternshipCourses) {
+    strWhere +=
+      ' AND candidates.idInternshipCourse = "' + condition.idInternshipCourses + '"';
+  }
+
 
   return strWhere;
 };
@@ -189,7 +197,7 @@ Candidate.ErrorRemainingSubjects =
   "Các môn học còn lại từ 2-255 ký tự !";
 Candidate.ErrorCovidVaccinationiInformation =
   "Thông tin tim chủng Covid từ 2-255 ký tự !";
-Candidate.ErrorCertificationDate = "Không được để trống ngày chứng nhận !";
+Candidate.ErrorCertificationDate = "Ngày chứng nhận không được lớn hơn ngày hiện tại";
 Candidate.ErrorCovidVaccinationCertificate =
   "Thông tin Giấy chứng nhận tiêm chủng covid từ 2-255 ký tự !";
 Candidate.ErrorPcType = "Vui lòng điền thông tin loại máy thực tập !";
@@ -201,8 +209,6 @@ Candidate.ErrorRemarks = "Các nhận xét từ 2-255 ký tự !";
 Candidate.ErrorComments = " Nhận xét từ 2-255 ký tự !";
 Candidate.ErrorEnglishCommunication =
   " Tiếng Anh giao tiếp từ 2-255 ký tự !";
-Candidate.ErrorRemark = " Chú thích từ 2-255 ký tự !";
-Candidate.ErrorIdMentor = "Không được để trống thông tin Mentor !";
 Candidate.ErrorTechnicalComments =
   " Thái độ ứng viên từ 2-255 ký tự !";
 Candidate.ErrorTechnicalScore =
