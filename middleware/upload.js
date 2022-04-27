@@ -1,4 +1,5 @@
 const multer = require("multer");
+const message = require("../models/message");
 const excelFilter = (req, file, cb) => {
   if (
     file.mimetype.includes("excel") ||
@@ -6,7 +7,7 @@ const excelFilter = (req, file, cb) => {
   ) {
     cb(null, true);
   } else {
-    cb("Vui lòng chỉ tải lên tệp excel.", false);
+    cb(message.ERUPLOAD, false);
   }
 };
 var storage = multer.diskStorage({

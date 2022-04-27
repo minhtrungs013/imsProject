@@ -1,5 +1,6 @@
 const db = require("../models/index");
 const Candidate = db.candidates;
+const message = require("../models/message");
 
 const readXlsxFile = require("read-excel-file/node");
 const { sequelize } = require("../models/index");
@@ -15,7 +16,7 @@ const checkDuplicateData = async (condition) => {
 
 const upload = async (req, res) => {
   if (req.file == undefined) {
-    return res.status(400).send("Vui lòng tải lên một tệp excel !");
+    return res.status(400).send(message.UPLOAD);
   }
   let path = "./resource/" + req.file.filename;
   const t = await sequelize.transaction();
@@ -72,7 +73,7 @@ const upload = async (req, res) => {
         };
         const isDuplicate = await checkDuplicateData(condition);
         if (isDuplicate) {
-          await await Candidate.update(candidate, {
+          await Candidate.update(candidate, {
             where: condition,
             transaction: t,
           });
@@ -87,7 +88,7 @@ const upload = async (req, res) => {
     } catch (error) {
       await t.rollback();
       return res.status(500).send({
-        message: "Không thể nhập dữ liệu vào cơ sở dữ liệu !",
+        message: message.ERROR,
         error: error.message,
       });
     }
@@ -106,8 +107,7 @@ const getCandidates = (req, res) => {
     })
     .catch((err) => {
       return res.status(500).send({
-        message:
-          err.message || "Đã xảy ra một số lỗi khi truy xuất các ứng cử viên .",
+        message: err.message || message.GET,
       });
     });
 };
