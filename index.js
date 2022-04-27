@@ -20,6 +20,7 @@ app.use(authRoute);
 app.use(requireToken, courseRoute);
 app.use(requireToken, mentor);
 app.use(requireToken, internship);
+
 app.listen(port, () => {
   console.log("App start success");
 });
