@@ -149,9 +149,6 @@ const buildWhere = (condition) => {
   if (condition.fullNames) {
     strWhere += ' AND fullName LIKE "%' + condition.fullNames + '%" ';
   }
-  if (condition.statuss) {
-    strWhere += ' AND status LIKE "%' + condition.statuss + '%" ';
-  }
 
   if (condition.emailCandidate) {
     strWhere +=

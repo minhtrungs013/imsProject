@@ -30,18 +30,13 @@ const getBatch = async (req, res) => {
   }
 
   let fullName = "";
-  let status = "";
   if (req.query.fullName) {
     fullName = req.query.fullName;
   }
-  if(req.query.status){
-    status = req.query.status;
-  }
-
   const id = req.params.id;
   
   const results = await candidates.getBatch(
-    { internshipcourseId: id, fullNames: fullName, statuss: status },
+    { internshipcourseId: id, fullNames: fullName },
     [],
     page,
     limit
