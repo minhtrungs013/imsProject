@@ -213,6 +213,8 @@ const buildWhere = (condition) => {
 };
 const Table = "candidates";
 Candidate.ERROR_EMPTY = "Bạn cần điền đầy đủ thông tin";
+Candidate.STATUS_PASS = "Pass";
+Candidate.STATUS_FAIL = "Fail";
 Candidate.ERROR_SEARCH = "Không có kết quả cho từ khóa này !";
 Candidate.ERROR_ID = "Internview không tồn tại trong hệ thống !";
 Candidate.ERROR_STATUS = "Kết quả phải là Pass hoặc Fail";
