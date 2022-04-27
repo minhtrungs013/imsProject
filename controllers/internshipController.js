@@ -152,7 +152,6 @@ const update = async (req, res) => {
       error: internshipModel.ERROR_LENGHT,
     });
   }
- 
   const emailRegex =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
@@ -406,7 +405,7 @@ const createInternship = async (req, res) => {
       error: internshipModel.ERROR_LENGHT,
     });
   }
-  const emailRegex =
+   const emailRegex =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
   if (!emailRegex.test(email)) {
