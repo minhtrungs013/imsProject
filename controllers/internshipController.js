@@ -76,14 +76,11 @@ const update = async (req, res) => {
   const {
     fullNameInternship: fullNameInternship,
     address: address,
-    dayOfBirth: dayOfBirth,
     university: university,
     email: email,
-    idMentor: idMentor,
     internshipProject: internshipProject,
     telInternship: telInternship,
     securityTest: securityTest,
-    idDG: idDG,
     internshipAgreementPolicy: internshipAgreementPolicy,
     toeicScore: toeicScore,
     testDate: testDate,
@@ -105,14 +102,11 @@ const update = async (req, res) => {
   if (
     !fullNameInternship ||
     !address ||
-    !dayOfBirth ||
     !university ||
     !email ||
-    !idMentor ||
     !internshipProject ||
     !telInternship ||
     !securityTest ||
-    !idDG ||
     !internshipAgreementPolicy ||
     !toeicScore ||
     !testDate ||
@@ -158,24 +152,7 @@ const update = async (req, res) => {
       error: internshipModel.ERROR_LENGHT,
     });
   }
-  if (dayOfBirth < "1960/01/01") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: internshipModel.ERROR_DATE,
-    });
-  }
-  const dateNow = new Date();
-  const dateRequest = new Date(
-    dayOfBirth.slice(0, 4) +
-      "/" +
-      dayOfBirth.slice(5, 7) +
-      "/" +
-      dayOfBirth.slice(8, 10)
-  );
-  if (dateRequest.getTime() > dateNow.getTime()) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: internshipModel.ERROR_DATENOW,
-    });
-  }
+ 
   const emailRegex =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
@@ -311,14 +288,11 @@ const update = async (req, res) => {
   const result = await internshipModel.update({
     fullNameInternship: fullNameInternship,
     address: address,
-    dayOfBirth: dayOfBirth,
     university: university,
     email: email,
-    idMentor: idMentor,
     internshipProject: internshipProject,
     telInternship: telInternship,
     securityTest: securityTest,
-    idDG: idDG,
     internshipAgreementPolicy: internshipAgreementPolicy,
     toeicScore: toeicScore,
     testDate: testDate,
@@ -350,7 +324,6 @@ const createInternship = async (req, res) => {
   const {
     fullNameInternship: fullNameInternship,
     address: address,
-    dayOfBirth: dayOfBirth,
     university: university,
     email: email,
     idMentor: idMentor,
@@ -380,7 +353,6 @@ const createInternship = async (req, res) => {
   if (
     !fullNameInternship ||
     !address ||
-    !dayOfBirth ||
     !university ||
     !email ||
     !idMentor ||
@@ -432,24 +404,6 @@ const createInternship = async (req, res) => {
   if (address.length < 2 || address.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: internshipModel.ERROR_LENGHT,
-    });
-  }
-  if (dayOfBirth < "1960/01/01") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: internshipModel.ERROR_DATE,
-    });
-  }
-  const dateNow = new Date();
-  const dateRequest = new Date(
-    dayOfBirth.slice(0, 4) +
-      "/" +
-      dayOfBirth.slice(5, 7) +
-      "/" +
-      dayOfBirth.slice(8, 10)
-  );
-  if (dateRequest.getTime() > dateNow.getTime()) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: internshipModel.ERROR_DATENOW,
     });
   }
   const emailRegex =
@@ -597,7 +551,6 @@ const createInternship = async (req, res) => {
   const result = await internshipModel.createInternship({
     fullNameInternship: fullNameInternship,
     address: address,
-    dayOfBirth: dayOfBirth,
     university: university,
     email: email,
     idMentor: idMentor,
