@@ -17,9 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //ROUTES
 app.use(authRoute);
-app.use(courseRoute);
-app.use(mentor);
-app.use(internship);
+app.use(requireToken, courseRoute);
+app.use(requireToken, mentor);
+app.use(requireToken, internship);
 app.listen(port, () => {
   console.log("App start success");
 });
