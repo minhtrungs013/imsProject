@@ -79,11 +79,9 @@ const update = async (req, res) => {
     dayOfBirth: dayOfBirth,
     university: university,
     email: email,
-    idMentor: idMentor,
     internshipProject: internshipProject,
     telInternship: telInternship,
     securityTest: securityTest,
-    idDG: idDG,
     internshipAgreementPolicy: internshipAgreementPolicy,
     toeicScore: toeicScore,
     testDate: testDate,
@@ -108,11 +106,9 @@ const update = async (req, res) => {
     !dayOfBirth ||
     !university ||
     !email ||
-    !idMentor ||
     !internshipProject ||
     !telInternship ||
     !securityTest ||
-    !idDG ||
     !internshipAgreementPolicy ||
     !toeicScore ||
     !testDate ||
@@ -314,11 +310,9 @@ const update = async (req, res) => {
     dayOfBirth: dayOfBirth,
     university: university,
     email: email,
-    idMentor: idMentor,
     internshipProject: internshipProject,
     telInternship: telInternship,
     securityTest: securityTest,
-    idDG: idDG,
     internshipAgreementPolicy: internshipAgreementPolicy,
     toeicScore: toeicScore,
     testDate: testDate,

@@ -93,7 +93,7 @@ const upload = async (req, res) => {
       });
     }
     return res.status(200).send({
-      message: "Import thành công file: " + req.file.originalname,
+      message: message.SUCCESS + req.file.originalname,
       countNumerUpdate: countNumerUpdate,
       countNumerInsert: countNumerInsert,
     });
