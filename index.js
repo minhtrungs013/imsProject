@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
+
 const cors = require("cors");
 app.use(cors());
 const { requireToken } = require("./middleware/index");
@@ -9,7 +10,8 @@ const { requireToken } = require("./middleware/index");
 const authRoute = require("./routers/auth");
 const courseRoute = require("./routers/course");
 const mentor = require("./routers/mentor");
-const internship = require("./routers/internship");
+const candidateRoute = require("./routers/internview");
+
 dotenv.config();
 const port = process.env.PORT;
 app.use(cors());
@@ -19,7 +21,7 @@ app.use(express.json());
 app.use(authRoute);
 app.use(requireToken, courseRoute);
 app.use(requireToken, mentor);
-app.use(requireToken, internship);
+app.use(requireToken, candidateRoute);
 
 app.listen(port, () => {
   console.log("App start success");
