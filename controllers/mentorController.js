@@ -9,8 +9,39 @@ const get = async (req, res) => {
   if (req.query.page && parseInt(req.query.page) > 0) {
     page = parseInt(req.query.page);
   }
+  let idDG = "";
+  if (req.query.idDG) {
+    idDG = req.query.idDG;
+  }
+  if(idDG === 'undefined') {
+    return res
+    .status(statusCodes.BAD_REQUEST)
+    .json({ error: mentorModel.ERROR_SPECIAL_CHARACTERISTICS });
+  }
+  const results = await mentorModel.get({idDG: idDG}, [], page, limit);
+  const total = await mentorModel.getTotalCount({}, [], page, limit);
+  return res.send({
+    data: results,
+    total: total,
+  });
+};
+const getiddg = async (req, res) => {
+  let page = 1,
+    limit = 20;
 
-  const results = await mentorModel.get({}, [], page, limit);
+  if (req.query.page && parseInt(req.query.page) > 0) {
+    page = parseInt(req.query.page);
+  }
+  let idDG = "";
+  if (req.query.idDG) {
+    idDG = req.query.idDG;
+  }
+  if(idDG === 'undefined') {
+    return res
+    .status(statusCodes.BAD_REQUEST)
+    .json({ error: mentorModel.ERROR_SPECIAL_CHARACTERISTICS });
+  }
+  const results = await mentorModel.getdiddg({idDG: idDG}, [], page, limit);
   const total = await mentorModel.getTotalCount({}, [], page, limit);
   return res.send({
     data: results,
@@ -40,9 +71,13 @@ const detailBatch = async (req, res) => {
   if (req.query.page && parseInt(req.query.page) > 0) {
     page = parseInt(req.query.page);
   }
+  let idDG = "";
+  if (req.query.idDG) {
+    idDG = req.query.idDG;
+  }
   const id = req.params.id;
   const results = await mentorModel.getdetailBatch(
-    { internshipcourseId: id },
+    { internshipcourseId: id, idDG: idDG },
     [],
     page,
     limit
@@ -283,4 +318,4 @@ const update = async (req, res) => {
   });
 };
 
-module.exports = { get, detailBatch, detail, update, create, remove };
+module.exports = { get, detailBatch, detail, update, create, remove , getiddg};

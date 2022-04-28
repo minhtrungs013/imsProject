@@ -195,7 +195,7 @@ const create = async (req, res) => {
       .json({ error: candidateModel.ERROR_REQUEST });
   }
   const countemail = await candidateModel.getBatch(
-    { emailCandidate: emailCandidate, idInternshipCourses: idInternshipCourse },
+    { emailCandidates: emailCandidate, idInternshipCourses: idInternshipCourse },
     [],
     1,
     1
@@ -388,6 +388,7 @@ const create = async (req, res) => {
     status: result,
     error: result ? candidateModel.MESSAGE_CREATE_DONE  : candidateModel.MESSAGE_CREATE_ERROR,
   });
+
 };
 const remove = async (req, res) => {
   const id = req.params.id;

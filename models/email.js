@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const sendMail = async (
   listCandidates,
+  subject,
   emailInterviewer,
   interviewLink,
   interviewDate,
@@ -52,6 +53,7 @@ const sendMail = async (
     return {
       from: process.env.adminEmail,
       to: emailCandidate,
+      subject: subject,
       html: `<h3 style="color: red;"> Xin chào ${fullName}</h3>
     <p>Như đã qua trao đổi bằng điện thoại, chúng tôi xin mời bạn đến với cuộc phỏng vấn chi tiết với trưởng dự án bằng link dưới đây.</p>
     <ul>
@@ -97,6 +99,7 @@ const sendMail = async (
     await listCandidates.map((item, index) => {
       const opt = options(
         listCandidates,
+        subject,
         interviewer,
         emailInterviewer,
         item.emailCandidate,

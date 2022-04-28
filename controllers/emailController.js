@@ -7,6 +7,7 @@ const emailController = {
 
     const {
       interviewer,
+      subject,
       emailInterviewer,
       interviewDate,
       interviewTime,
@@ -15,6 +16,7 @@ const emailController = {
     } = req.body;
     if (
       !emailInterviewer ||
+      !subject ||
       !interviewLink ||
       !interviewDate ||
       !interviewTime ||
@@ -81,6 +83,7 @@ const emailController = {
 
     const sendMail = await emailModel.sendMail(
       listCandidates,
+      subject,
       emailInterviewer,
       interviewLink,
       interviewDate,

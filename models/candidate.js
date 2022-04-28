@@ -199,9 +199,9 @@ const buildWhere = (condition) => {
   if (condition.idInternshipCourse) {
     strWhere += " AND idInternshipCourse  = " + condition.idInternshipCourse;
   }
-  if (condition.emailCandidate) {
+  if (condition.emailCandidates) {
     strWhere +=
-      ' AND candidates.emailCandidate = "' + condition.emailCandidate + '"';
+      ' AND candidates.emailCandidate = "' + condition.emailCandidates + '"';
   }
   if (condition.idInternshipCourses) {
     strWhere +=

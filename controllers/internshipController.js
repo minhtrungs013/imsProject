@@ -38,7 +38,6 @@ const create = async (req, res) => {
 const detailBatch = async (req, res) => {
   let page = 1,
     limit = 20;
-
   if (req.query.page && parseInt(req.query.page) > 0) {
     page = parseInt(req.query.page);
   }
@@ -60,7 +59,6 @@ const detailBatch = async (req, res) => {
     total: total,
   });
 };
-
 const remove = async (req, res) => {
   const id = req.params.id;
   const result = await internshipModel.remove({ idInternship: id });
@@ -75,6 +73,8 @@ const update = async (req, res) => {
   const idInternship = req.params.id;
   const {
     fullNameInternship: fullNameInternship,
+    idMentor: idMentor,
+    idDG: idDG,
     address: address,
     university: university,
     email: email,
@@ -98,9 +98,10 @@ const update = async (req, res) => {
     certificationDate: certificationDate,
     internshipDomain: internshipDomain,
   } = req.body;
-
   if (
     !fullNameInternship ||
+    !idMentor ||
+    !idDG ||
     !address ||
     !university ||
     !email ||
@@ -286,6 +287,8 @@ const update = async (req, res) => {
   }
   const result = await internshipModel.update({
     fullNameInternship: fullNameInternship,
+    idMentor:idMentor,
+    idDG:idDG,
     address: address,
     university: university,
     email: email,
@@ -325,11 +328,11 @@ const createInternship = async (req, res) => {
     address: address,
     university: university,
     email: email,
+    idDG: idDG,
     idMentor: idMentor,
     internshipProject: internshipProject,
     telInternship: telInternship,
     securityTest: securityTest,
-    idDG: idDG,
     internshipAgreementPolicy: internshipAgreementPolicy,
     toeicScore: toeicScore,
     testDate: testDate,
@@ -348,7 +351,7 @@ const createInternship = async (req, res) => {
     certificationDate: certificationDate,
     internshipDomain: internshipDomain,
   } = req.body;
-
+ 
   if (
     !fullNameInternship ||
     !address ||
@@ -405,7 +408,7 @@ const createInternship = async (req, res) => {
       error: internshipModel.ERROR_LENGHT,
     });
   }
-   const emailRegex =
+  const emailRegex =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
   if (!emailRegex.test(email)) {

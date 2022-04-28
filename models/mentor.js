@@ -33,6 +33,27 @@ Mentor.get = async (condition, columns, page, limit) => {
     console.log(err);
   }
 };
+Mentor.getdiddg = async (condition, columns, page, limit) => {
+  try {
+    const where = buildWhere(condition);
+    let listColumn = "*";
+    if (columns && columns.length > 0) {
+      listColumn = columns.join();
+    }
+
+    let offset = 0;
+    if (page > 1) {
+      offset = (page - 1) * limit;
+    }
+
+    const strSql = `SELECT ${listColumn} FROM mentor WHERE ${where} LIMIT ${limit} OFFSET ${offset}`;
+    const query = util.promisify(connect.query).bind(connect);
+    return await query(strSql);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 
 Mentor.getTotalCount = async (condition) => {
   try {
@@ -52,6 +73,9 @@ const buildWhere = (condition) => {
 
   if (condition.mentorId) {
     strWhere += " AND idMentor = " + condition.mentorId;
+  }
+  if (condition.idDG) {
+    strWhere += " AND mentor.idDG = " + condition.idDG;
   }
   if (condition.idMentor) {
     strWhere += " AND idMentor = " + condition.idMentor;
@@ -90,6 +114,7 @@ Mentor.getdetailBatch = async (condition, columns, page, limit) => {
     console.log(err);
   }
 };
+
 const inner = ` INNER JOIN internshipcourse
 INNER JOIN dg 
 ON mentor.idInternshipCourse = internshipcourse.idInternshipCourse 
