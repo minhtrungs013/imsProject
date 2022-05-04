@@ -320,7 +320,7 @@ const create = async (req, res) => {
       "/" +
       certificationDate.slice(5, 7) +
       "/" +
-      certificationDate.slice(8, 10) +
+      certificationDate.slice(8, 10) +1 +
       ","
   );
   if (
@@ -349,7 +349,7 @@ const create = async (req, res) => {
       "/" +
       preferredInternshipStartDate.slice(5, 7) +
       "/" +
-      preferredInternshipStartDate.slice(8, 10) +
+      preferredInternshipStartDate.slice(8, 10)+1 +
       ","
   );
   if (
@@ -403,18 +403,11 @@ const updateCandidate = async (req, res) => {
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
   const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
   const scoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
-  const ScoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
   const id = req.params.id;
   const {
     fullName,
     tel,
     emailCandidate,
-    technicalComments,
-    technicalScore,
-    attitude,
-    englishCommunication,
-    comments,
-    remarks,
     internshipDomain,
     preferredSkills,
     university,
@@ -423,6 +416,7 @@ const updateCandidate = async (req, res) => {
     studentID,
     preferredInternshipStartDate,
     preferredInternshipDuration,
+    idInternshipCourse,
     internshipSchedule,
     GPA,
     graduationYear,
@@ -458,179 +452,173 @@ const updateCandidate = async (req, res) => {
     !pcType
   ) {
     return res
-      .status(statusCodes.BAD_REQUEST)
-      .json({ error: candidateModel.ERROR_REQUEST });
-  }
-  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
-  const checkForSpecialChar = function (string) {
-    for (i = 0; i < specialChars.length; i++) {
-      if (string.indexOf(specialChars[i]) > -1) {
-        return true;
-      }
+    .status(statusCodes.BAD_REQUEST)
+    .json({ error: candidateModel.ERROR_REQUEST });
+}
+ if(!emailRegex.test(emailCandidate)){
+  return res
+  .status(statusCodes.BAD_REQUEST)
+  .json({ error: candidateModel.ERROR_EMAIL });
+ }
+const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+const checkForSpecialChar = function (string) {
+  for (i = 0; i < specialChars.length; i++) {
+    if (string.indexOf(specialChars[i]) > -1) {
+      return true;
     }
-    return false;
-  };
-  if (checkForSpecialChar(fullName)) {
-    return res
-      .status(statusCodes.BAD_REQUEST)
-      .json({ error: candidateModel.ERROR_NAME_SPECIAL_CHARS });
   }
-  if (fullName.length < 2 || fullName.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_NAME_LENGTH,
-    });
-  }
-  if (!sdtRegex.test(tel)) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_SDT,
-    });
-  }
-  if (!emailRegex.test(emailCandidate)) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_EMAIL,
-    });
-  }
-  if (!scoreRegex.test(technicalScore)) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_TECHNICAL_SCORE,
-    });
-  }
-  if (internshipDomain.length < 2 || internshipDomain.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_INTERNSHIP_DOMAIN,
-    });
-  }
-  if (preferredSkills.length < 2 || preferredSkills.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_PREFERRED_SKILL,
-    });
-  }
-  if (university.length < 2 || university.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_UNIVERSITY ,
-    });
-  }
-  if (faculty.length < 2 || faculty.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_FACURTY,
-    });
-  }
-  if (currentYearofStudy === "") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_CURRENT_YEAR_OF_STUDY,
-    });
-  }
-  if (studentID.length < 2 || studentID.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_STUDENTID,
-    });
-  }
-
-  const dateRequest = new Date(
-    preferredInternshipStartDate.slice(0, 4) +
-      "/" +
-      preferredInternshipStartDate.slice(5, 7) +
-      "/" +
-      preferredInternshipStartDate.slice(8, 10) +
-      ","
-  );
-  if (
-    dateRequest.getTime() < dateNow.getTime() ||
-    dateRequest.getTime() == dateNow.getTime()
-  ) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_PREFERRED_INTERNSHIP_START_DATE ,
-    });
-  }
-  if (
-    preferredInternshipDuration.length < 2 ||
-    preferredInternshipDuration.length > 255
-  ) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_PREFERRED_INTERNSHIP_DURATION,
-    });
-  }
-  if (internshipSchedule === "") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_INTERNSHIP_SCHEDULE,
-    });
-  }
-  if (!ScoreRegex.test(GPA)) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_GPA,
-    });
-  }
-
-  if (graduationYear.length < 2 || graduationYear.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_GRADUATION_YEAR,
-    });
-  }
-  if (projectExperience.length < 2 || projectExperience.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_PROJECT_EXPERIENCE,
-    });
-  }
-  if (
-    expectedGraduationSchedule.length < 2 ||
-    expectedGraduationSchedule.length > 255
-  ) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_EXPECTED_GRADUATION_SCHEDULE,
-    });
-  }
-  if (remainingSubjects.length < 2 || remainingSubjects.length > 255) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_REMAINING_SUBJECT,
-    });
-  }
-  if (
-    covidVaccinationiInformation.length < 2 ||
-    covidVaccinationiInformation.length > 255
-  ) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_COVID_VACCINATION_INFORMATION,
-    });
-  }
-  const dateRequestCertification = new Date(
-    certificationDate.slice(0, 4) +
-      "/" +
-      certificationDate.slice(5, 7) +
-      "/" +
-      certificationDate.slice(8, 10) +
-      ","
-  );
-  if (
-    dateRequestCertification.getTime() > dateNow.getTime() ||
-    dateRequestCertification.getTime() == dateNow.getTime()
-  ) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_CERTIFICATION_DATE ,
-    });
-  }
-  if (
-    covidVaccinationCertificate.length < 2 ||
-    covidVaccinationCertificate.length > 255
-  ) {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_COVID_VACCINATION_CERTIFICATE,
-    });
-  }
-  if (pcType === "") {
-    return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidateModel.ERROR_PC_TYPE,
-    });
-  }
+  return false;
+};
+if (checkForSpecialChar(fullName)) {
+  return res
+    .status(statusCodes.BAD_REQUEST)
+    .json({ error: candidateModel.ERROR_NAME_SPECIAL_CHARS });
+}
+if (fullName.length < 2 || fullName.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_NAME_LENGTH,
+  });
+}
+if (!sdtRegex.test(tel)) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_SDT,
+  });
+}
+if (!emailRegex.test(emailCandidate)) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_EMAIL,
+  });
+}
+if (internshipDomain.length < 2 || internshipDomain.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_INTERNSHIP_DOMAIN,
+  });
+}
+if (preferredSkills.length < 2 || preferredSkills.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_PREFERRED_SKILL,
+  });
+}
+if (university.length < 2 || university.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_UNIVERSITY,
+  });
+}
+if (faculty.length < 2 || faculty.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_FACURTY,
+  });
+}
+if (currentYearofStudy === "") {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_CURRENT_YEAR_OF_STUDY,
+  });
+}
+if (studentID.length < 2 || studentID.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_STUDENTID,
+  });
+}
+if (preferredInternshipDuration === "") {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_PREFERRED_INTERNSHIP_DURATION,
+  });
+}
+if (internshipSchedule === "") {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_INTERNSHIP_SCHEDULE,
+  });
+}
+if (!scoreRegex.test(GPA)) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_GPA,
+  });
+}
+if (idInternshipCourse === "") {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_ID_INTERNSHIP_COURSE,
+  });
+}
+if (graduationYear === "") {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_GRADUATION_YEAR,
+  });
+}
+if (projectExperience.length < 2 || projectExperience.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_PROJECT_EXPERIENCE,
+  });
+}
+if (
+  expectedGraduationSchedule.length < 2 ||
+  expectedGraduationSchedule.length > 255
+) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_EXPECTED_GRADUATION_SCHEDULE ,
+  });
+}
+if (remainingSubjects.length < 2 || remainingSubjects.length > 255) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_REMAINING_SUBJECT,
+  });
+}
+if (
+  covidVaccinationiInformation.length < 2 ||
+  covidVaccinationiInformation.length > 255
+) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_COVID_VACCINATION_CERTIFICATE,
+  });
+}
+const dateRequestCertification = new Date(
+  certificationDate.slice(0, 4) +
+    "/" +
+    certificationDate.slice(5, 7) +
+    "/" +
+    certificationDate.slice(8, 10)+1 +
+    ","
+);
+if (
+  dateRequestCertification.getTime() > dateNow.getTime() ||
+  dateRequestCertification.getTime() == dateNow.getTime()
+) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_CERTIFICATION_DATE,
+  });
+}
+if (
+  covidVaccinationCertificate.length < 2 ||
+  covidVaccinationCertificate.length > 255
+) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_COVID_VACCINATION_CERTIFICATE,
+  });
+}
+if (pcType === "") {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_PC_TYPE,
+  });
+}
+const dateRequest = new Date(
+  preferredInternshipStartDate.slice(0, 4) +
+    "/" +
+    preferredInternshipStartDate.slice(5, 7) +
+    "/" +
+    preferredInternshipStartDate.slice(8, 10)+1 +
+    ","
+);
+if (
+  dateRequest.getTime() < dateNow.getTime() ||
+  dateRequest.getTime() == dateNow.getTime()
+) {
+  return res.status(statusCodes.BAD_REQUEST).json({
+    error: candidateModel.ERROR_PREFERRED_INTERNSHIP_START_DATE,
+  });
+}
   const result = await candidateModel.update({
     fullName: fullName,
     tel: tel,
     emailCandidate: emailCandidate,
-    technicalComments: technicalComments,
-    technicalScore: technicalScore,
-    attitude: attitude,
-    englishCommunication: englishCommunication,
-    comments: comments,
-    remarks: remarks,
     internshipDomain: internshipDomain,
     preferredSkills: preferredSkills,
     university: university,
