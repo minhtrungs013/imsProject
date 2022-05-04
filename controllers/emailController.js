@@ -54,7 +54,7 @@ const emailController = {
       });
     }
 
-    if (interviewer.length < 10 || interviewer.length > 255) {
+    if (interviewer.length < 5 || interviewer.length > 255) {
       return res.status(statusCodes.BAD_REQUEST).json({
         error: emailModel.sendMail.ErrorInterviewer,
       });
