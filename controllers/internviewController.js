@@ -1,7 +1,7 @@
 const candidateModel = require("../models/candidate");
 const statusCodes = require("http-status-codes");
 const get = async (req, res) => {
-  const idInternshipCourse  = req.params.id;
+  const idInternshipCourse = req.params.id;
   let page = 1,
     limit = 20;
   if (req.query.page && parseInt(req.query.page) > 0) {
@@ -20,7 +20,12 @@ const get = async (req, res) => {
     updateInsert = req.query.updateInsert;
   }
   const results = await candidateModel.getInterview(
-    {idInternshipCourse :idInternshipCourse , fullNames: fullName, statusPr: status,updateInserts: updateInsert },
+    {
+      idInternshipCourse: idInternshipCourse,
+      fullNames: fullName,
+      statusPr: status,
+      updateInserts: updateInsert,
+    },
     [],
     page,
     limit
@@ -28,7 +33,7 @@ const get = async (req, res) => {
   const total = await candidateModel.getTotalCount({
     fullNames: fullName,
     statusPr: status,
-    updateInsert: updateInsert
+    updateInsert: updateInsert,
   });
   if (results[0] === undefined) {
     return res
@@ -44,11 +49,21 @@ const get = async (req, res) => {
 const updateInternviewResult = async (req, res) => {
   const idCandidate = req.params.id;
   const updateInsert = "success";
-  const { status, idMentor, idDG, comments } = req.body;
+  const {
+    status,
+    idMentor,
+    idDG,
+    comments,
+    remarks,
+    technicalComments,
+    technicalScore,
+    englishCommunication,
+    attitude,
+  } = req.body;
   if (
     status !== candidateModel.STATUS_PASS &&
-    status !== candidateModel.STATUS_FAIL 
-  ){
+    status !== candidateModel.STATUS_FAIL
+  ) {
     return res
       .status(statusCodes.BAD_REQUEST)
       .json({ error: candidateModel.ERROR_STATUS });
@@ -71,6 +86,11 @@ const updateInternviewResult = async (req, res) => {
     idMentor: idMentor,
     idDG: idDG,
     comments: comments,
+    remarks: remarks,
+    technicalComments: technicalComments,
+    technicalScore: technicalScore,
+    englishCommunication: englishCommunication,
+    attitude: attitude,
   });
   return res.status(statusCodes.OK).json({
     status: results,
@@ -82,7 +102,7 @@ const updateInsert = async (req, res) => {
   const idInternshipCourse = req.params.id;
   const results = await candidateModel.update({
     updateInsert: updateInsert,
-    idInternshipCourse: idInternshipCourse
+    idInternshipCourse: idInternshipCourse,
   });
   return res.status(statusCodes.OK).json({
     status: results,
