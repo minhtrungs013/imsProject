@@ -25,17 +25,8 @@ const create = async (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: courseModel.ERROR_LENGTH_NAMECOURE });
   }
-  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
-  const checkForSpecialChar = function(string){
-  for(i = 0; i < specialChars.length;i++){
-    if(string.indexOf(specialChars[i]) > -1){
-        return true
-      }
-  }
-  return false;
-  }
-
-  if(checkForSpecialChar(nameCoure)){
+  const reg = /^batch \d{1,}$/i;
+  if(!reg.test(nameCoure)){
     return res
       .status(statusCodes.BAD_REQUEST)
       .json({ error: courseModel.ERROR_SPECIAL_CHARACTERS });
