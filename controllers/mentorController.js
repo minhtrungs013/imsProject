@@ -9,16 +9,7 @@ const get = async (req, res) => {
   if (req.query.page && parseInt(req.query.page) > 0) {
     page = parseInt(req.query.page);
   }
-  let idDG = "";
-  if (req.query.idDG) {
-    idDG = req.query.idDG;
-  }
-  if(idDG === 'undefined') {
-    return res
-    .status(statusCodes.BAD_REQUEST)
-    .json({ error: mentorModel.ERROR_SPECIAL_CHARACTERISTICS });
-  }
-  const results = await mentorModel.get({idDG: idDG}, [], page, limit);
+  const results = await mentorModel.get({}, [], page, limit);
   const total = await mentorModel.getTotalCount({}, [], page, limit);
   return res.send({
     data: results,
@@ -36,12 +27,16 @@ const getiddg = async (req, res) => {
   if (req.query.idDG) {
     idDG = req.query.idDG;
   }
+  let idInternshipCourse = "";
+  if (req.query.idInternshipCourse) {
+    idInternshipCourse = req.query.idInternshipCourse;
+  }
   if(idDG === 'undefined') {
     return res
     .status(statusCodes.BAD_REQUEST)
     .json({ error: mentorModel.ERROR_SPECIAL_CHARACTERISTICS });
   }
-  const results = await mentorModel.getdiddg({idDG: idDG}, [], page, limit);
+  const results = await mentorModel.getdiddg({idDGs: idDG , idInternshipCourse: idInternshipCourse}, [], page, limit);
   const total = await mentorModel.getTotalCount({}, [], page, limit);
   return res.send({
     data: results,
@@ -77,7 +72,7 @@ const detailBatch = async (req, res) => {
   }
   const id = req.params.id;
   const results = await mentorModel.getdetailBatch(
-    { internshipcourseId: id, idDG: idDG },
+    { internshipcourseId: id, idDGs: idDG },
     [],
     page,
     limit
@@ -95,6 +90,10 @@ const detailBatch = async (req, res) => {
 };
 
 const create = async (req, res) => {
+  let idInternshipCourse = "";
+  if (req.query.idInternshipCourse) {
+    idInternshipCourse = req.query.idInternshipCourse;
+  }
   const emailRegex =
     /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
@@ -106,7 +105,6 @@ const create = async (req, res) => {
     email: email,
     position: position,
     idDG: idDG,
-    idInternshipCourse: idInternshipCourse,
   } = req.body;
   if (
     !fullNameMentor ||
@@ -115,8 +113,7 @@ const create = async (req, res) => {
     !workplace ||
     !email ||
     !position ||
-    !idDG ||
-    !idInternshipCourse
+    !idDG 
   ) {
     return res
       .status(statusCodes.BAD_REQUEST)

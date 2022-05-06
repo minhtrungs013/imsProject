@@ -4,12 +4,14 @@ const util = require("util");
 const Dg = (dg) => {
   this.idDG = dg.idDG;
   this.nameDG = dg.nameDG;
+  this.idInternshipCourse = dg.idInternshipCourse;
 };
 
 Dg.getList = async (condition) => {
   try {
     const listColumn = "*";
-    const strSql = `SELECT ${listColumn} FROM dg `;
+    const where = buildWhere(condition);
+    const strSql = `SELECT ${listColumn} FROM dg WHERE ${where}`;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
@@ -19,7 +21,7 @@ Dg.getList = async (condition) => {
 
 Dg.create = async (condition) => {
   try {
-    const sql = `INSERT INTO dg SET ?`;
+    const sql = `INSERT INTO dg SET ? `;
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
     return result.affectedRows !== 0;
@@ -58,6 +60,9 @@ const buildWhere = (condition) => {
 
   if (condition.idDG) {
     strWhere += " AND idDG = " + condition.idDG;
+  }
+  if (condition.idInternshipCourse) {
+    strWhere += " AND idInternshipCourse = " + condition.idInternshipCourse;
   }
 
   return strWhere;

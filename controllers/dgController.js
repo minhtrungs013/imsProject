@@ -2,11 +2,19 @@ const dgModel = require("../models/dg");
 const statusCodes = require("http-status-codes");
 
 const getList = async (req, res) => {
-  const result = await dgModel.getList({});
+  let idInternshipCourse = "";
+  if (req.query.idInternshipCourse) {
+    idInternshipCourse = req.query.idInternshipCourse;
+  }
+  const result = await dgModel.getList({idInternshipCourse: idInternshipCourse});
   return res.status(statusCodes.OK).json({ data: result });
 };
 
 const create = async (req, res) => {
+  let idInternshipCourse = "";
+  if (req.query.idInternshipCourse) {
+    idInternshipCourse = req.query.idInternshipCourse;
+  }
   const { nameDG } = req.body;
   if (!nameDG) {
     return res
@@ -21,6 +29,7 @@ const create = async (req, res) => {
 
   const results = await dgModel.create({
     nameDG: nameDG,
+    idInternshipCourse: idInternshipCourse
   });
   return res.status(statusCodes.OK).json({
     status: results,

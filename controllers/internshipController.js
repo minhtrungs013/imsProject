@@ -24,6 +24,7 @@ const detail = async (req, res) => {
 };
 
 const create = async (req, res) => {
+  
   const idInternshipCourse = req.params.id;
   const results = await internshipModel.create({
     idInternshipCourse: idInternshipCourse,
@@ -323,6 +324,10 @@ const update = async (req, res) => {
 };
 
 const createInternship = async (req, res) => {
+  let idInternshipCourse = "";
+  if (req.query.idInternshipCourse) {
+    idInternshipCourse = req.query.idInternshipCourse;
+  }
   const {
     fullNameInternship: fullNameInternship,
     address: address,
@@ -342,7 +347,6 @@ const createInternship = async (req, res) => {
       workEtiquetteProfessionalCommunication,
     presentationSkills: presentationSkills,
     trainingAttendance: trainingAttendance,
-    idInternshipCourse: idInternshipCourse,
     status: status,
     remark: remark,
     pcType: pcType,
@@ -370,7 +374,6 @@ const createInternship = async (req, res) => {
     !workEtiquetteProfessionalCommunication ||
     !presentationSkills ||
     !trainingAttendance ||
-    !idInternshipCourse ||
     !status ||
     !remark ||
     !pcType ||

@@ -74,8 +74,8 @@ const buildWhere = (condition) => {
   if (condition.mentorId) {
     strWhere += " AND idMentor = " + condition.mentorId;
   }
-  if (condition.idDG) {
-    strWhere += " AND mentor.idDG = " + condition.idDG;
+  if (condition.idDGs) {
+    strWhere += " AND mentor.idDG = " + condition.idDGs;
   }
   if (condition.idMentor) {
     strWhere += " AND idMentor = " + condition.idMentor;
