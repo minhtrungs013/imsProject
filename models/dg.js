@@ -67,6 +67,7 @@ const buildWhere = (condition) => {
 
   return strWhere;
 };
+Dg.ErrorSpecialChars ="Không được nhập kí tự đặc biệt"
 Dg.ErrorRequest = "Bạn cần nhập đầy đủ thông ";
 Dg.ErrorName = "Tên DG không đủ chiều dài";
 Dg.SuccessMessage = "Cập nhật thành công";

@@ -2,8 +2,8 @@ const nodeMailer = require("nodemailer");
 const dotenv = require("dotenv");
 dotenv.config();
 const sendMail = async (
-  listCandidates,
   subject,
+  listCandidates,
   emailInterviewer,
   interviewLink,
   interviewDate,
@@ -44,6 +44,7 @@ const sendMail = async (
     "END:VCALENDAR";
 
   const options = (
+    subject,
     listMail,
     namePersonInterview,
     emailPersonInterview,
@@ -98,8 +99,8 @@ const sendMail = async (
   try {
     await listCandidates.map((item, index) => {
       const opt = options(
-        listCandidates,
         subject,
+        listCandidates,
         interviewer,
         emailInterviewer,
         item.emailCandidate,
@@ -123,7 +124,7 @@ sendMail.Error = "Bạn cần nhập đầy đủ thông tin";
 sendMail.ErrorEmail = "Email người phỏng vấn không hợp lệ";
 sendMail.ErrorInterviewLink = "Link phỏng vấn không đủ chiều dài";
 sendMail.ErrorInterviewDate = "Ngày phỏng vấn không thể nhỏ hơn ngày hiện tại";
-sendMail.ErrorInterviewer = "Tên người phỏng vấn không đủ chiều dài";
+sendMail.ErrorInterviewer = "Cần điền đầy đủ họ tên";
 sendMail.ErrorSpecialChars =
   "Tên người phỏng vấn không được chứa ký tự đặt biệt";
 sendMail.SuccessMessage = "Gửi mail thành công";

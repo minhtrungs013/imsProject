@@ -16,12 +16,27 @@ const create = async (req, res) => {
     idInternshipCourse = req.query.idInternshipCourse;
   }
   const { nameDG } = req.body;
+  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+  const checkForSpecialChar = function (string) {
+    for (i = 0; i < specialChars.length; i++) {
+      if (string.indexOf(specialChars[i]) > -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  if (checkForSpecialChar(nameDG)) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: "không được nhập kí tự đặc biệt" });
+  }
   if (!nameDG) {
     return res
       .status(statusCodes.BAD_REQUEST)
       .json({ error: dgModel.ErrorRequest });
   }
-  if (nameDG.length < 3 || nameDG.length > 255) {
+  if (nameDG.length < 0 || nameDG.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: dgModel.ErrorName,
     });
@@ -40,6 +55,21 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   const id = req.params.id;
   const { nameDG } = req.body;
+  const specialChars = "<>@!#$%^&*()_+[]{}?:;|'\"\\,./~`-=";
+  const checkForSpecialChar = function (string) {
+    for (i = 0; i < specialChars.length; i++) {
+      if (string.indexOf(specialChars[i]) > -1) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  if (checkForSpecialChar(nameDG)) {
+    return res
+      .status(statusCodes.BAD_REQUEST)
+      .json({ error: dgModel.ErrorSpecialChars });
+  }
   if (!nameDG) {
     return res
       .status(statusCodes.BAD_REQUEST)

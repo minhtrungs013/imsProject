@@ -96,6 +96,8 @@ const buildWhere = (condition) => {
   return strWhere;
 };
 Mentor.getdetailBatch = async (condition, columns, page, limit) => {
+    let listColumn = "*";
+
   try {
     if (columns && columns.length > 0) {
       listColumn = columns.join();

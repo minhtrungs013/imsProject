@@ -53,9 +53,11 @@ internship.internshipSchedule,
 internship.covidVaccinationiInformation,
 internship.certificationDate,
 internship.internshipDomain,
-internship.internship.trainingAttendance,
+internship.idDG,
+internship.trainingAttendance,
 dg.nameDG,
 mentor.fullNameMentor,
+mentor.idMentor,
 internshipcourse.dateStart,
 internshipcourse.dateEnd,
 internshipcourse.nameCoure
@@ -234,7 +236,7 @@ Internship.MESSAGE_UPDATE = "Cập nhật thành công !!!";
 Internship.ERROR_CREATE = "DG hoặc khóa thực tập không tồn tại !!!";
 Internship.ERROR_UPDATE = "Thực tập sinh không tồn tại";
 Internship.ERROR_DATENOW = "Ngày sinh không được lớn hơn ngày hiện tại !!!";
-Internship.ERROR_DATETEST = "Ngày test không được lớn hơn ngày hiện tại !!!";
+Internship.ERROR_DATETEST = "Ngày kiểm tra không được lớn hơn ngày hiện tại !!!";
 Internship.ERROR_DATECER =
   "Ngày chứng nhận không được lớn hơn ngày hiện tại !!!";
 Internship.ERROR_EMPTY = "Vui lòng điền đẩy đủ thông tin !!!";
@@ -244,7 +246,7 @@ Internship.MESSAGE_UPDATE = "Cập nhật thành công !!!";
 Internship.MESSAGE_CREATE = "Thêm thành công !!!";
 Internship.ERROR_CREATE = "Thêm thất bại !!!";
 Internship.ERROR_TOEIC = "Điểm toeic nhập vào không hợp lệ !!!";
-Internship.ERROR_SECURITY = "Điểm security nhập vào không hợp lệ !!!";
+Internship.ERROR_SECURITY = "Điểm bảo mật thông tin nhập vào không hợp lệ !!!";
 Internship.ERROR_TEL = "Số điện thoại không hợp lệ !!!";
 Internship.ERROR_EMAIL_DUPLICATE = "Email thực tập sinh đã tồn tại";
 module.exports = Internship;

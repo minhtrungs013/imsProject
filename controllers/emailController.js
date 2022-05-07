@@ -6,17 +6,24 @@ const emailController = {
       /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*.?[a-zA-Z0-9])*.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
     const {
-      interviewer,
       subject,
+      interviewer,
       emailInterviewer,
       interviewDate,
       interviewTime,
       interviewLink,
       listCandidates,
     } = req.body;
+    console.log(subject,
+      listCandidates,
+      emailInterviewer,
+      interviewLink,
+      interviewDate,
+      interviewTime,
+      interviewer)
     if (
-      !emailInterviewer ||
       !subject ||
+      !emailInterviewer ||
       !interviewLink ||
       !interviewDate ||
       !interviewTime ||
@@ -54,7 +61,7 @@ const emailController = {
       });
     }
 
-    if (interviewer.length < 5 || interviewer.length > 255) {
+    if (interviewer.length < 0 || interviewer.length > 255) {
       return res.status(statusCodes.BAD_REQUEST).json({
         error: emailModel.sendMail.ErrorInterviewer,
       });
@@ -82,8 +89,17 @@ const emailController = {
     });
 
     const sendMail = await emailModel.sendMail(
-      listCandidates,
       subject,
+      listCandidates,
+      emailInterviewer,
+      interviewLink,
+      interviewDate,
+      interviewTime,
+      interviewer
+    );
+    console.log(
+      subject,
+      listCandidates,
       emailInterviewer,
       interviewLink,
       interviewDate,

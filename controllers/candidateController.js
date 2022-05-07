@@ -320,7 +320,7 @@ const create = async (req, res) => {
       "/" +
       certificationDate.slice(5, 7) +
       "/" +
-      certificationDate.slice(8, 10) +1 +
+      certificationDate.slice(8, 10) +
       ","
   );
   if (
@@ -349,7 +349,7 @@ const create = async (req, res) => {
       "/" +
       preferredInternshipStartDate.slice(5, 7) +
       "/" +
-      preferredInternshipStartDate.slice(8, 10)+1 +
+      preferredInternshipStartDate.slice(8, 10) +
       ","
   );
   if (
@@ -428,6 +428,28 @@ const updateCandidate = async (req, res) => {
     covidVaccinationCertificate,
     pcType,
   } = req.body;
+  console.log( fullName,
+    tel,
+    emailCandidate,
+    internshipDomain,
+    preferredSkills,
+    university,
+    faculty,
+    currentYearofStudy,
+    studentID,
+    preferredInternshipStartDate,
+    preferredInternshipDuration,
+    idInternshipCourse,
+    internshipSchedule,
+    GPA,
+    graduationYear,
+    projectExperience,
+    expectedGraduationSchedule,
+    remainingSubjects,
+    covidVaccinationiInformation,
+    certificationDate,
+    covidVaccinationCertificate,
+    pcType,)
   if (
     !fullName ||
     !tel ||
@@ -575,12 +597,13 @@ const dateRequestCertification = new Date(
     "/" +
     certificationDate.slice(5, 7) +
     "/" +
-    certificationDate.slice(8, 10)+1 +
+    certificationDate.slice(8, 10) +
     ","
 );
 if (
-  dateRequestCertification.getTime() > dateNow.getTime() ||
-  dateRequestCertification.getTime() == dateNow.getTime()
+  dateRequestCertification.getTime() > dateNow.getTime()
+  ||
+    dateRequestCertification.getTime() == dateNow.getTime()
 ) {
   return res.status(statusCodes.BAD_REQUEST).json({
     error: candidateModel.ERROR_CERTIFICATION_DATE,
@@ -604,7 +627,7 @@ const dateRequest = new Date(
     "/" +
     preferredInternshipStartDate.slice(5, 7) +
     "/" +
-    preferredInternshipStartDate.slice(8, 10)+1 +
+    preferredInternshipStartDate.slice(8, 10) +
     ","
 );
 if (
