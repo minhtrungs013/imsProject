@@ -305,7 +305,7 @@ const create = async (req, res) => {
   }
   if (remainingSubjects.length < 2 || remainingSubjects.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
-      error: candidates.ERROR_REMAINING_SUBJECT,
+      error: candidateModel.ERROR_REMAINING_SUBJECT,
     });
   }
   if (
