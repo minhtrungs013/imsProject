@@ -597,8 +597,8 @@ const createInternship = async (req, res) => {
 
 const updateStatus = async (req, res) => {
   const internshipStatus = "Đang thực tập";
-  const result = await internshipModel.update(
-    { internshipStatuss: internshipStatus
+  const result = await internshipModel.updateStatus(
+    { internshipStatus: internshipStatus
     },
     
   );

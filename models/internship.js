@@ -192,6 +192,17 @@ Internship.update = async (condition) => {
     console.log(err);
   }
 };
+Internship.updateStatus = async (condition) => {
+  try {
+    const sql = `UPDATE internship SET ? WHERE internshipStatus != "Dừng thực tập"`;
+    console.log(sql)
+    const query = util.promisify(connect.query).bind(connect);
+    const result = await query(sql, condition);
+    return result.affectedRows !== 0;
+  } catch (err) {
+    console.log(err);
+  }
+};
 Internship.createInternship = async (condition) => {
   try {
     const sql = `INSERT INTO internship SET ?`;
@@ -223,9 +234,6 @@ const buildWhere = (condition) => {
   }
   if (condition.emailInternship) {
     strWhere += ' AND internship.email = "' + condition.emailInternship + '"';
-  }
-  if (condition.internshipStatuss) {
-    strWhere += ' AND internshipStatus != "' + 'Dừng thực tập' + '"';
   }
   return strWhere;
 };
