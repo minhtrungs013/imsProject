@@ -142,6 +142,7 @@ const create = async (req, res) => {
   const sdtRegex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
   const scoreRegex = /^[0-9](\.[0-9]{1,2})?$|^10(\.[0]{1,2})?$/g;
   const id = req.params.id;
+  const status = "Waiting for results";
   const {
     fullName,
     tel,
@@ -361,6 +362,7 @@ const create = async (req, res) => {
     });
   }
   const result = await candidateModel.create({
+    status: status,
     fullName: fullName,
     tel: tel,
     emailCandidate: emailCandidate,

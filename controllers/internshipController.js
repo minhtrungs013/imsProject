@@ -24,7 +24,7 @@ const detail = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  
+
   const idInternshipCourse = req.params.id;
   const results = await internshipModel.create({
     idInternshipCourse: idInternshipCourse,
@@ -73,6 +73,7 @@ const remove = async (req, res) => {
 const update = async (req, res) => {
   const idInternship = req.params.id;
   const {
+    internshipStatus: internshipStatus,
     fullNameInternship: fullNameInternship,
     idMentor: idMentor,
     idDG: idDG,
@@ -100,6 +101,7 @@ const update = async (req, res) => {
     internshipDomain: internshipDomain,
   } = req.body;
   if (
+    !internshipStatus ||
     !fullNameInternship ||
     !idMentor ||
     !idDG ||
@@ -287,6 +289,7 @@ const update = async (req, res) => {
     });
   }
   const result = await internshipModel.update({
+    internshipStatus: internshipStatus,
     fullNameInternship: fullNameInternship,
     idMentor:idMentor,
     idDG:idDG,
@@ -328,6 +331,8 @@ const createInternship = async (req, res) => {
   if (req.query.idInternshipCourse) {
     idInternshipCourse = req.query.idInternshipCourse;
   }
+  const internshipStatus = 'Đang thực tập'
+ 
   const {
     fullNameInternship: fullNameInternship,
     address: address,
@@ -580,6 +585,7 @@ const createInternship = async (req, res) => {
     covidVaccinationiInformation: covidVaccinationiInformation,
     certificationDate: certificationDate,
     internshipDomain: internshipDomain,
+    internshipStatus: internshipStatus
   });
   return res.status(statusCodes.OK).json({
     data: result,
@@ -589,7 +595,23 @@ const createInternship = async (req, res) => {
   });
 };
 
+const updateStatus = async (req, res) => {
+  const internshipStatus = "Đang thực tập";
+  const result = await internshipModel.update(
+    { internshipStatuss: internshipStatus
+    },
+    
+  );
+  return res.status(statusCodes.OK).json({
+    data: result,
+    message: result
+      ? internshipModel.MESSAGE_UPDATE
+      : internshipModel.ERROR_UPDATE,
+  });
+}
+
 module.exports = {
+  updateStatus,
   get,
   create,
   detail,

@@ -9,5 +9,6 @@ router.get("/internship/batch/:id", internshipController.detailBatch);
 router.post("/internship/:id", internshipController.create);
 router.post("/internship/", internshipController.createInternship);
 router.put("/internship/:id", internshipController.update);
+router.put("/internship/", internshipController.updateStatus);
 
 module.exports = router;

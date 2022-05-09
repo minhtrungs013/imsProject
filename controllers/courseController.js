@@ -140,7 +140,7 @@ const update = async (req, res) => {
 const del = async (req, res) => {
   const idInternshipCourse = req.params.id;
   const courseId = await courseModel.getList({
-    idInternshipCourse: idInternshipCourse,
+    idInternshipCourse: idInternshipCourse, 
   });
   if (!courseId.length) {
     return res

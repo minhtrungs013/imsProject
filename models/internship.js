@@ -28,6 +28,7 @@ const Internship = (internship) => {
   this.covidVaccinationiInformation = internship.covidVaccinationiInformation;
   this.certificationDate = internship.certificationDate;
   this.internshipDomain = internship.internshipDomain;
+  this.internshipStatus = internship.internshipStatus
 };
 const listColumn = `
 internship.idInternship,  
@@ -55,6 +56,7 @@ internship.certificationDate,
 internship.internshipDomain,
 internship.idDG,
 internship.trainingAttendance,
+internship.internshipStatus,
 dg.nameDG,
 mentor.fullNameMentor,
 mentor.idMentor,
@@ -221,6 +223,9 @@ const buildWhere = (condition) => {
   }
   if (condition.emailInternship) {
     strWhere += ' AND internship.email = "' + condition.emailInternship + '"';
+  }
+  if (condition.internshipStatuss) {
+    strWhere += ' AND internshipStatus != "' + 'Dừng thực tập' + '"';
   }
   return strWhere;
 };

@@ -14,7 +14,7 @@ Internshipcourse.getList = async (condition) => {
   try {
     const listColumn = "*";
     const where = buildWhere(condition);
-    const strSql = `SELECT ${listColumn} FROM ${table} WHERE ${where}`;
+    const strSql = `SELECT ${listColumn} FROM  ${table} WHERE ${where} ORDER BY idInternshipCourse DESC`;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
