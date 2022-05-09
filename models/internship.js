@@ -195,7 +195,6 @@ Internship.update = async (condition) => {
 Internship.updateStatus = async (condition) => {
   try {
     const sql = `UPDATE internship SET ? WHERE internshipStatus != "Dừng thực tập"`;
-    console.log(sql)
     const query = util.promisify(connect.query).bind(connect);
     const result = await query(sql, condition);
     return result.affectedRows !== 0;
