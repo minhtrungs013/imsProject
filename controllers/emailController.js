@@ -14,13 +14,6 @@ const emailController = {
       interviewLink,
       listCandidates,
     } = req.body;
-    console.log(subject,
-      listCandidates,
-      emailInterviewer,
-      interviewLink,
-      interviewDate,
-      interviewTime,
-      interviewer)
     if (
       !subject ||
       !emailInterviewer ||

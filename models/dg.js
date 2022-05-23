@@ -11,7 +11,7 @@ Dg.getList = async (condition) => {
   try {
     const listColumn = "*";
     const where = buildWhere(condition);
-    const strSql = `SELECT ${listColumn} FROM dg WHERE ${where}`;
+    const strSql = `SELECT ${listColumn} FROM dg WHERE ${where} ORDER BY idDG DESC`;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {

@@ -75,7 +75,7 @@ const update = async (req, res) => {
       .status(statusCodes.BAD_REQUEST)
       .json({ error: dgModel.ErrorRequest });
   }
-  if (nameDG.length < 3 || nameDG.length > 255) {
+  if (nameDG.length < 1 || nameDG.length > 255) {
     return res.status(statusCodes.BAD_REQUEST).json({
       error: dgModel.ErrorName,
     });

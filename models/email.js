@@ -64,7 +64,7 @@ const sendMail = async (
       <li>
       ${
         emailPersonInterview === emailCandidate && listMail
-          ? `Danh sách email người phỏng vấn: ${listMail.map(
+          ? `Email người phỏng vấn: ${listMail.map(
               (element, index) => {
                 if (element.emailCandidate !== emailPersonInterview) {
                   return ` <a href="#">${element.emailCandidate}</a>`;

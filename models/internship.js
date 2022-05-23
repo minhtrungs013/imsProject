@@ -85,7 +85,7 @@ Internship.get = async (condition, columns, page, limit) => {
       offset = (page - 1) * limit;
     }
 
-    const strSql = `SELECT ${listColumn}FROM internship ${inner} WHERE ${where} LIMIT ${limit} OFFSET ${offset}`;
+    const strSql = `SELECT ${listColumn}FROM internship ${inner} WHERE ${where} ORDER BY idInternship DESC LIMIT ${limit} OFFSET ${offset}`;
 
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
@@ -161,7 +161,7 @@ Internship.getdetailBatch = async (condition, columns, page, limit) => {
     }
     const where = buildWhere(condition);
 
-    const strSql = `SELECT ${listColumn} FROM internship ${inner} WHERE ${where} LIMIT ${limit} OFFSET ${offset} `;
+    const strSql = `SELECT ${listColumn} FROM internship ${inner} WHERE ${where} ORDER BY idInternship DESC LIMIT ${limit} OFFSET ${offset} `;
     const query = util.promisify(connect.query).bind(connect);
     return await query(strSql);
   } catch (err) {
